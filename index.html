@@ -1,0 +1,2639 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>post ready? ✨</title>
+    <meta name="description" content="Your AI bestie that tells you if your photo slaps. Private. On-device. No cap.">
+    <meta name="theme-color" content="#f1faee">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="post ready?">
+    <link rel="manifest" href="manifest.json">
+    <meta property="og:title" content="post ready? ✨">
+    <meta property="og:description"
+        content="AI tells you if your photo is post-worthy. 100% private. Runs on your device.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300;400;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ── CSS Variables ─────────────────────────────────────── */
+        :root {
+            --red: #e63946;
+            --dew: #f1faee;
+            --frost: #a8dadc;
+            --steel: #457b9d;
+            --deep: #1d3557;
+            --white: #ffffff;
+            --g100: #f8f9fa;
+            --g200: #e9ecef;
+            --g400: #adb5bd;
+            --g600: #6c757d;
+            --amber: #f4a261;
+            --green: #52b788;
+            --r-sm: 12px;
+            --r-md: 20px;
+            --r-lg: 28px;
+            --r-xl: 40px;
+            --sh-sm: 0 2px 8px rgba(29, 53, 87, .08);
+            --sh-md: 0 4px 20px rgba(29, 53, 87, .12);
+            --sh-lg: 0 8px 40px rgba(29, 53, 87, .18);
+            --fd: 'Bricolage Grotesque', sans-serif;
+            --fb: 'DM Sans', sans-serif;
+            --ease: 0.3s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        /* ── Reset ─────────────────────────────────────────────── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            -webkit-tap-highlight-color: transparent;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--fb);
+            background: var(--white);
+            color: var(--deep);
+            min-height: 100dvh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        button {
+            font-family: var(--fb);
+            cursor: pointer;
+            border: none;
+            outline: none;
+            -webkit-appearance: none;
+            background: none;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* ── SPLASH SCREEN ─────────────────────────────────────── */
+        #splash {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: var(--dew);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+            transition: opacity .6s ease, transform .6s ease;
+        }
+
+        #splash.hiding {
+            opacity: 0;
+            transform: scale(1.03);
+            pointer-events: none;
+        }
+
+        .splash-top {
+            text-align: center;
+            padding: 48px 24px 20px;
+        }
+
+        .splash-logo {
+            font-family: var(--fd);
+            font-weight: 800;
+            font-size: clamp(38px, 10vw, 56px);
+            letter-spacing: -.03em;
+            line-height: 1;
+            color: var(--deep);
+        }
+
+        .splash-logo .dot {
+            color: var(--red);
+        }
+
+        .splash-sub {
+            margin-top: 10px;
+            font-size: clamp(14px, 3.8vw, 17px);
+            color: var(--steel);
+            font-weight: 400;
+        }
+
+        .splash-sub .spicy {
+            color: var(--red);
+            font-weight: 600;
+        }
+
+        /* Loading widget */
+        .load-card {
+            width: calc(100% - 40px);
+            max-width: 400px;
+            background: white;
+            border-radius: var(--r-lg);
+            padding: 20px 22px;
+            box-shadow: var(--sh-md);
+            margin: 0 auto 8px;
+        }
+
+        .load-phase-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .load-phase-icon {
+            font-size: 22px;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .load-phase-title {
+            font-family: var(--fd);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--deep);
+        }
+
+        .load-phase-sub {
+            font-size: 11px;
+            color: var(--g600);
+            margin-top: 2px;
+        }
+
+        .pbar-wrap {
+            background: var(--g200);
+            border-radius: 999px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .pbar-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--steel), var(--frost));
+            transition: width 1s ease;
+            width: 2%;
+        }
+
+        .pbar-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 11px;
+            color: var(--g600);
+        }
+
+        .file-ticker {
+            margin-top: 10px;
+            font-size: 10.5px;
+            color: var(--g400);
+            font-family: monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-height: 16px;
+        }
+
+        .file-ticker .done {
+            color: var(--green);
+        }
+
+        .file-ticker .active {
+            color: var(--steel);
+        }
+
+        /* Storage warning */
+        .storage-warn {
+            width: calc(100% - 40px);
+            max-width: 400px;
+            margin: 0 auto 8px;
+            background: #fff8e7;
+            border: 1.5px solid var(--amber);
+            border-radius: var(--r-md);
+            padding: 12px 16px;
+            font-size: 12px;
+            color: #7c5800;
+            line-height: 1.5;
+        }
+
+        .storage-warn strong {
+            font-weight: 700;
+        }
+
+        /* Fun facts carousel */
+        .carousel-wrap {
+            flex: 1;
+            width: 100%;
+            min-height: 0;
+            overflow: hidden;
+            padding: 12px 0 0;
+        }
+
+        .carousel-label {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--steel);
+            margin-bottom: 12px;
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 14px;
+            padding: 0 20px;
+            transition: transform .55s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .fact-card {
+            min-width: calc(100vw - 72px);
+            max-width: 360px;
+            background: white;
+            border-radius: var(--r-md);
+            padding: 20px;
+            box-shadow: var(--sh-sm);
+            flex-shrink: 0;
+        }
+
+        .fact-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .fact-title {
+            font-family: var(--fd);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--deep);
+            margin-bottom: 6px;
+        }
+
+        .fact-body {
+            font-size: 13px;
+            color: var(--g600);
+            line-height: 1.65;
+        }
+
+        .fact-body .hi {
+            color: var(--red);
+            font-weight: 600;
+        }
+
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 0;
+        }
+
+        .cdot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--g200);
+            transition: all .3s;
+        }
+
+        .cdot.active {
+            background: var(--steel);
+            width: 18px;
+            border-radius: 3px;
+        }
+
+        .pwa-nudge {
+            padding: 8px 20px 20px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--steel);
+        }
+
+        .pwa-nudge strong {
+            font-weight: 700;
+            color: var(--deep);
+        }
+
+        /* ── MAIN APP ──────────────────────────────────────────── */
+        #app {
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            display: none;
+        }
+
+        .app-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            background: white;
+            border-bottom: 1.5px solid var(--g200);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-logo {
+            font-family: var(--fd);
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: -.02em;
+            color: var(--deep);
+        }
+
+        .app-logo .dot {
+            color: var(--red);
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 5px 11px;
+            border-radius: 999px;
+            background: var(--g100);
+            color: var(--g600);
+            transition: all var(--ease);
+        }
+
+        .status-pill.ready {
+            background: #d8f3dc;
+            color: #1b4332;
+        }
+
+        .status-pill.loading {
+            background: #fff3cd;
+            color: #6d4c0a;
+        }
+
+        .sdot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .sdot.pulse {
+            animation: sdpulse 1.5s ease infinite;
+        }
+
+        @keyframes sdpulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1)
+            }
+
+            50% {
+                opacity: .4;
+                transform: scale(.7)
+            }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            padding: 12px 14px;
+            background: white;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 82px;
+            padding: 10px 10px;
+            border-radius: var(--r-sm);
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--g600);
+            background: var(--g100);
+            border: 2px solid transparent;
+            text-align: center;
+            transition: all var(--ease);
+            white-space: nowrap;
+        }
+
+        .tab.on {
+            background: var(--deep);
+            color: white;
+            border-color: var(--deep);
+        }
+
+        /* Tab panels */
+        .panel {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+        }
+
+        .panel.on {
+            display: flex;
+        }
+
+        /* ── CHECK PANEL ──────────────────────────────────────── */
+        .drop-zone {
+            margin: 14px;
+            border: 2.5px dashed var(--frost);
+            border-radius: var(--r-lg);
+            padding: 44px 20px;
+            text-align: center;
+            background: var(--dew);
+            cursor: pointer;
+            transition: all var(--ease);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .drop-zone.over {
+            border-color: var(--steel);
+            background: #e3f2f7;
+        }
+
+        .drop-zone.hidden {
+            display: none;
+        }
+
+        .dz-icon {
+            font-size: 52px;
+            margin-bottom: 14px;
+        }
+
+        .dz-title {
+            font-family: var(--fd);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--deep);
+            margin-bottom: 6px;
+        }
+
+        .dz-sub {
+            font-size: 14px;
+            color: var(--g600);
+        }
+
+        .dz-sub .alt {
+            color: var(--steel);
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .img-preview {
+            margin: 14px;
+            border-radius: var(--r-lg);
+            overflow: hidden;
+            position: relative;
+            background: var(--g100);
+            display: none;
+        }
+
+        .img-preview img {
+            width: 100%;
+            max-height: 320px;
+            object-fit: cover;
+        }
+
+        .img-preview-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: white;
+            border-top: 1px solid var(--g200);
+        }
+
+        .img-preview-name {
+            font-size: 12px;
+            color: var(--g600);
+            font-weight: 500;
+        }
+
+        .img-change-btn {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--steel);
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: var(--g100);
+        }
+
+        .check-btn {
+            margin: 0 14px 14px;
+            padding: 17px;
+            background: var(--red);
+            color: white;
+            border-radius: var(--r-md);
+            font-family: var(--fd);
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -.01em;
+            width: calc(100% - 28px);
+            box-shadow: 0 4px 22px rgba(230, 57, 70, .32);
+            transition: all var(--ease);
+        }
+
+        .check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(230, 57, 70, .42);
+        }
+
+        .check-btn:active {
+            transform: translateY(0);
+        }
+
+        .check-btn:disabled {
+            background: var(--g400);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Analyzing state */
+        .analyzing-box {
+            margin: 0 14px 14px;
+            background: var(--deep);
+            border-radius: var(--r-lg);
+            padding: 22px;
+            text-align: center;
+            display: none;
+            color: white;
+        }
+
+        .analyzing-box.on {
+            display: block;
+        }
+
+        .an-title {
+            font-family: var(--fd);
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .an-sub {
+            font-size: 12px;
+            color: rgba(255, 255, 255, .6);
+            margin-bottom: 14px;
+        }
+
+        .think-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .tdot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--frost);
+            animation: tdpulse 1.5s ease infinite;
+        }
+
+        .tdot:nth-child(2) {
+            animation-delay: .22s;
+        }
+
+        .tdot:nth-child(3) {
+            animation-delay: .44s;
+        }
+
+        @keyframes tdpulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: .4
+            }
+
+            50% {
+                transform: scale(1.4);
+                opacity: 1
+            }
+        }
+
+        .token-stream {
+            font-size: 9.5px;
+            color: rgba(168, 218, 220, .55);
+            font-family: monospace;
+            max-height: 36px;
+            overflow: hidden;
+            word-break: break-all;
+            line-height: 1.5;
+            border-top: 1px solid rgba(255, 255, 255, .1);
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        /* ── RESULTS ───────────────────────────────────────────── */
+        .results {
+            margin: 0 14px 80px;
+            display: none;
+        }
+
+        .results.on {
+            display: block;
+        }
+
+        /* Verdict banner */
+        .verdict-banner {
+            border-radius: var(--r-lg);
+            padding: 26px 20px;
+            text-align: center;
+            margin-bottom: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .verdict-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .verdict-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .v-emoji {
+            font-size: 52px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .v-text {
+            font-family: var(--fd);
+            font-size: clamp(24px, 7vw, 32px);
+            font-weight: 800;
+            letter-spacing: -.02em;
+            color: white;
+        }
+
+        .v-score {
+            font-size: 13px;
+            color: rgba(255, 255, 255, .75);
+            margin-top: 4px;
+        }
+
+        .v-vibe {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 4px 14px;
+            background: rgba(255, 255, 255, .2);
+            border-radius: 999px;
+            font-size: 13px;
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Score ring + info */
+        .ring-card {
+            background: white;
+            border-radius: var(--r-lg);
+            padding: 20px;
+            margin-bottom: 14px;
+            box-shadow: var(--sh-sm);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .ring-wrap {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            flex-shrink: 0;
+        }
+
+        .ring-svg {
+            transform: rotate(-90deg);
+        }
+
+        .ring-bg {
+            fill: none;
+            stroke: var(--g200);
+            stroke-width: 9;
+        }
+
+        .ring-arc {
+            fill: none;
+            stroke-width: 9;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1.6s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .ring-label {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ring-num {
+            font-family: var(--fd);
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--deep);
+            line-height: 1;
+            letter-spacing: -.03em;
+        }
+
+        .ring-tag {
+            font-size: 9px;
+            color: var(--g600);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        .ring-info {
+            flex: 1;
+        }
+
+        .ring-info-title {
+            font-family: var(--fd);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--deep);
+            margin-bottom: 5px;
+        }
+
+        .ring-info-body {
+            font-size: 13px;
+            color: var(--g600);
+            line-height: 1.5;
+        }
+
+        .platform-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: var(--deep);
+            color: white;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .best-time-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: var(--frost);
+            color: var(--deep);
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 6px;
+            margin-left: 4px;
+        }
+
+        /* Score bars */
+        .bars-card {
+            background: white;
+            border-radius: var(--r-lg);
+            padding: 20px;
+            margin-bottom: 14px;
+            box-shadow: var(--sh-sm);
+        }
+
+        .bars-title {
+            font-family: var(--fd);
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            color: var(--deep);
+        }
+
+        .sbar {
+            margin-bottom: 15px;
+        }
+
+        .sbar:last-child {
+            margin-bottom: 0;
+        }
+
+        .sbar-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .sbar-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--deep);
+        }
+
+        .sbar-val {
+            font-family: var(--fd);
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .sbar-track {
+            height: 7px;
+            background: var(--g200);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .sbar-fill {
+            height: 100%;
+            border-radius: 999px;
+            width: 0;
+            transition: width 1.3s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .c-low {
+            color: var(--red);
+        }
+
+        .c-mid {
+            color: var(--amber);
+        }
+
+        .c-high {
+            color: var(--steel);
+        }
+
+        .c-epic {
+            color: var(--green);
+        }
+
+        .f-low {
+            background: var(--red);
+        }
+
+        .f-mid {
+            background: var(--amber);
+        }
+
+        .f-high {
+            background: var(--steel);
+        }
+
+        .f-epic {
+            background: var(--green);
+        }
+
+        /* Captions card */
+        .cap-card {
+            background: white;
+            border-radius: var(--r-lg);
+            padding: 20px;
+            margin-bottom: 14px;
+            box-shadow: var(--sh-sm);
+        }
+
+        .cap-title {
+            font-family: var(--fd);
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: var(--deep);
+        }
+
+        .cap-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 13px;
+            background: var(--g100);
+            border-radius: var(--r-sm);
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all var(--ease);
+            border: 2px solid transparent;
+        }
+
+        .cap-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .cap-item:hover {
+            border-color: var(--frost);
+            background: white;
+        }
+
+        .cap-item.copied {
+            border-color: var(--green);
+            background: #d8f3dc;
+        }
+
+        .cap-num {
+            min-width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--deep);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .cap-text {
+            font-size: 13.5px;
+            color: var(--deep);
+            line-height: 1.55;
+            flex: 1;
+        }
+
+        .cap-copy-hint {
+            font-size: 11px;
+            color: var(--g400);
+            margin-top: 3px;
+        }
+
+        /* Glow-ups */
+        .glow-card {
+            background: linear-gradient(145deg, var(--deep) 0%, var(--steel) 100%);
+            border-radius: var(--r-lg);
+            padding: 20px;
+            margin-bottom: 14px;
+            color: white;
+        }
+
+        .glow-title {
+            font-family: var(--fd);
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .glow-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.55;
+        }
+
+        .glow-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .glow-ic {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* Retry btn */
+        .retry-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: var(--g100);
+            color: var(--deep);
+            border-radius: var(--r-md);
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            text-align: center;
+            transition: all var(--ease);
+        }
+
+        .retry-btn:hover {
+            background: var(--g200);
+        }
+
+        /* ── LIVE PANEL ─────────────────────────────────────────── */
+        .live-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 14px;
+            gap: 14px;
+        }
+
+        .cam-wrap {
+            position: relative;
+            border-radius: var(--r-lg);
+            overflow: hidden;
+            background: var(--deep);
+            flex: 1;
+            min-height: 240px;
+            max-height: 55vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #camVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #camCanvas {
+            display: none;
+        }
+
+        .cam-overlay {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            right: 12px;
+            background: rgba(29, 53, 87, .88);
+            backdrop-filter: blur(10px);
+            border-radius: var(--r-md);
+            padding: 14px;
+            display: none;
+        }
+
+        .cam-overlay.on {
+            display: block;
+        }
+
+        .cam-ov-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .cam-ov-score {
+            font-family: var(--fd);
+            font-size: 28px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -.02em;
+        }
+
+        .cam-ov-verdict {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--frost);
+        }
+
+        .cam-ov-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 16px;
+        }
+
+        .cam-ov-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: rgba(255, 255, 255, .75);
+        }
+
+        .cam-ov-val {
+            font-weight: 700;
+            color: var(--frost);
+        }
+
+        .cam-no-access {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 12px;
+            padding: 32px 20px;
+        }
+
+        .cam-na-icon {
+            font-size: 60px;
+        }
+
+        .cam-na-title {
+            font-family: var(--fd);
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .cam-na-sub {
+            font-size: 14px;
+            color: var(--g600);
+            line-height: 1.5;
+        }
+
+        .cam-grant {
+            padding: 12px 24px;
+            background: var(--steel);
+            color: white;
+            border-radius: var(--r-md);
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .cam-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .cam-scan-btn {
+            flex: 1;
+            padding: 14px;
+            background: var(--red);
+            color: white;
+            border-radius: var(--r-md);
+            font-family: var(--fd);
+            font-size: 17px;
+            font-weight: 700;
+            box-shadow: 0 4px 18px rgba(230, 57, 70, .3);
+            transition: all var(--ease);
+        }
+
+        .cam-scan-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .cam-scan-btn:disabled {
+            background: var(--g400);
+            box-shadow: none;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .cam-flip {
+            width: 52px;
+            height: 52px;
+            background: var(--g100);
+            border-radius: var(--r-sm);
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--ease);
+        }
+
+        .cam-flip:hover {
+            background: var(--g200);
+        }
+
+        /* ── BATTLE PANEL ──────────────────────────────────────── */
+        .battle-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 14px;
+            gap: 14px;
+            overflow-y: auto;
+        }
+
+        .battle-head {
+            text-align: center;
+        }
+
+        .battle-head-title {
+            font-family: var(--fd);
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -.02em;
+        }
+
+        .battle-head-sub {
+            font-size: 13px;
+            color: var(--g600);
+            margin-top: 4px;
+        }
+
+        .battle-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .bslot {
+            aspect-ratio: 1;
+            border: 2.5px dashed var(--frost);
+            border-radius: var(--r-md);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            background: var(--dew);
+            transition: all var(--ease);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bslot:hover {
+            border-color: var(--steel);
+        }
+
+        .bslot.has-img {
+            border: none;
+        }
+
+        .bslot.winner {
+            outline: 3px solid var(--green);
+            outline-offset: 2px;
+        }
+
+        .bslot.loser {
+            opacity: .55;
+            filter: grayscale(.3);
+        }
+
+        .bslot input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .bslot-ph {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .bslot-lbl {
+            font-size: 12px;
+            color: var(--steel);
+            font-weight: 500;
+        }
+
+        .bslot-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .bslot-score {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 6px;
+            background: linear-gradient(transparent, rgba(29, 53, 87, .9));
+            text-align: center;
+        }
+
+        .bslot-num {
+            font-family: var(--fd);
+            font-size: 22px;
+            font-weight: 800;
+            color: white;
+            line-height: 1;
+        }
+
+        .bslot-v {
+            font-size: 10px;
+            color: rgba(255, 255, 255, .75);
+        }
+
+        .winner-badge {
+            position: absolute;
+            top: 7px;
+            right: 7px;
+            background: var(--green);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .battle-go-btn {
+            padding: 14px;
+            background: var(--deep);
+            color: white;
+            border-radius: var(--r-md);
+            font-family: var(--fd);
+            font-size: 17px;
+            font-weight: 700;
+            text-align: center;
+            transition: all var(--ease);
+            box-shadow: 0 4px 18px rgba(29, 53, 87, .25);
+        }
+
+        .battle-go-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .battle-go-btn:disabled {
+            background: var(--g400);
+            box-shadow: none;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .battle-result {
+            background: white;
+            border-radius: var(--r-lg);
+            padding: 20px;
+            box-shadow: var(--sh-sm);
+            display: none;
+        }
+
+        .battle-result.on {
+            display: block;
+        }
+
+        .br-title {
+            font-family: var(--fd);
+            font-size: 17px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        .br-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .br-col {
+            background: var(--g100);
+            border-radius: var(--r-sm);
+            padding: 12px;
+            font-size: 12px;
+            color: var(--g600);
+            line-height: 1.6;
+        }
+
+        .br-col.best {
+            background: #d8f3dc;
+        }
+
+        .br-col-name {
+            font-family: var(--fd);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--deep);
+            margin-bottom: 6px;
+        }
+
+        .br-col-score {
+            font-family: var(--fd);
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--deep);
+            line-height: 1;
+        }
+
+        .br-col-verdict {
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .br-vs {
+            font-family: var(--fd);
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--g400);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ── TOAST ─────────────────────────────────────────────── */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--deep);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 99999;
+            transition: transform .4s cubic-bezier(.4, 0, .2, 1);
+            max-width: calc(100vw - 40px);
+            text-align: center;
+            box-shadow: var(--sh-md);
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── PWA BANNER ────────────────────────────────────────── */
+        #pwa-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 14px 18px;
+            box-shadow: 0 -4px 24px rgba(0, 0, 0, .1);
+            border-radius: var(--r-lg) var(--r-lg) 0 0;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #pwa-bar.show {
+            display: flex;
+        }
+
+        .pwa-ic {
+            font-size: 36px;
+        }
+
+        .pwa-txt {
+            flex: 1;
+        }
+
+        .pwa-t {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .pwa-s {
+            font-size: 12px;
+            color: var(--g600);
+        }
+
+        .pwa-install {
+            padding: 8px 16px;
+            background: var(--red);
+            color: white;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .pwa-x {
+            font-size: 20px;
+            color: var(--g400);
+            padding: 4px;
+        }
+
+        /* ── Confetti ──────────────────────────────────────────── */
+        .conf {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            pointer-events: none;
+            z-index: 99998;
+        }
+
+        @keyframes conf-fall {
+            0% {
+                transform: translateY(-20px) rotate(0);
+                opacity: 1
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0
+            }
+        }
+
+        /* ── Utilities ─────────────────────────────────────────── */
+        .gone {
+            display: none !important;
+        }
+
+        .scroll-y {
+            overflow-y: auto;
+        }
+
+        @media (min-width: 500px) {
+            .battle-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (min-width: 720px) {
+
+            #app,
+            #splash {
+                max-width: 480px;
+                margin: 0 auto;
+            }
+
+            #splash {
+                position: fixed;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 100%;
+                max-width: 480px;
+                border-left: 1px solid var(--g200);
+                border-right: 1px solid var(--g200);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══════════════════════ SPLASH SCREEN ════════════════════════ -->
+    <div id="splash">
+        <div class="splash-top">
+            <div class="splash-logo">post ready<span class="dot">?</span> ✨</div>
+            <p class="splash-sub">your AI bestie that knows if your pic actually <span class="spicy">slaps</span></p>
+        </div>
+
+        <!-- Storage warning -->
+        <div class="storage-warn">
+            <strong>⚠️ First launch only:</strong> downloading ~500MB–1GB AI model. After that — instant! WiFi
+            recommended. Your pics <strong>never leave your device</strong> 🔒
+        </div>
+
+        <!-- Loading card -->
+        <div class="load-card">
+            <div class="load-phase-row">
+                <div class="load-phase-icon" id="phaseIcon">⏳</div>
+                <div>
+                    <div class="load-phase-title" id="phaseTitle">Getting things ready…</div>
+                    <div class="load-phase-sub" id="phaseSub">Loading AI processor</div>
+                </div>
+            </div>
+            <div class="pbar-wrap">
+                <div class="pbar-fill" id="pbar"></div>
+            </div>
+            <div class="pbar-stats">
+                <span id="pbarPct">0%</span>
+                <span id="pbarPhase">Initializing</span>
+            </div>
+            <div class="file-ticker" id="fileTicker">Connecting to model host…</div>
+        </div>
+
+        <!-- Carousel -->
+        <div class="carousel-wrap">
+            <div class="carousel-label">💭 fun facts while u wait</div>
+            <div class="carousel-track" id="carTrack">
+                <div class="fact-card">
+                    <div class="fact-icon">⚡</div>
+                    <div class="fact-title">The 0.4 second rule</div>
+                    <div class="fact-body">You have <span class="hi">less than half a second</span> before someone
+                        scrolls past your post. Your thumbnail is doing the heavy lifting — not your caption.</div>
+                </div>
+                <div class="fact-card">
+                    <div class="fact-icon">🌿</div>
+                    <div class="fact-title">Vibe &gt; perfection</div>
+                    <div class="fact-body">Gen Z engages <span class="hi">2× more</span> with authentic posts than
+                        over-edited ones. Candid, slightly imperfect? That's the aesthetic now.</div>
+                </div>
+                <div class="fact-card">
+                    <div class="fact-icon">💡</div>
+                    <div class="fact-title">Lighting is literally everything</div>
+                    <div class="fact-body">Golden hour and soft window light <span class="hi">add depth ring lights
+                            can't replicate</span>. The best camera is the one with good light in front of it.</div>
+                </div>
+                <div class="fact-card">
+                    <div class="fact-icon">🎨</div>
+                    <div class="fact-title">Color story check</div>
+                    <div class="fact-body">Posts with a <span class="hi">cohesive color palette</span> get up to 40%
+                        more saves on average. Your feed is a mood board — make it intentional.</div>
+                </div>
+                <div class="fact-card">
+                    <div class="fact-icon">📐</div>
+                    <div class="fact-title">The .5 effect is still slapping</div>
+                    <div class="fact-body">Wide-angle shots with a <span class="hi">slight tilt or unexpected
+                            crop</span> signal personality. The "0.5x selfie" trend is still going strong in 2026.</div>
+                </div>
+                <div class="fact-card">
+                    <div class="fact-icon">🕐</div>
+                    <div class="fact-title">Timing is lowkey science</div>
+                    <div class="fact-body">Posts at <span class="hi">Tue–Thu 6–9pm</span> consistently outperform. Your
+                        algorithm loves fresh content when your audience is already scrolling.</div>
+                </div>
+                <div class="fact-card">
+                    <div class="fact-icon">💬</div>
+                    <div class="fact-title">Caption hack</div>
+                    <div class="fact-body">Captions ending in a <span class="hi">question</span> get ~3× more comments.
+                        Give people a reason to type, not just double-tap and move on.</div>
+                </div>
+            </div>
+            <div class="carousel-dots" id="carDots"></div>
+        </div>
+
+        <div class="pwa-nudge">📲 <strong>Pro tip:</strong> Add to Home Screen for instant loads after today!</div>
+    </div>
+
+    <!-- ═══════════════════════ MAIN APP ════════════════════════════ -->
+    <div id="app">
+        <!-- App bar -->
+        <div class="app-bar">
+            <div class="app-logo">post ready<span class="dot">?</span></div>
+            <div class="status-pill loading" id="statusPill">
+                <div class="sdot pulse" id="statusDot"></div>
+                <span id="statusText">Loading AI…</span>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab on" data-tab="check">📸 Check</button>
+            <button class="tab" data-tab="live">🎥 Live</button>
+            <button class="tab" data-tab="battle">⚔️ Battle</button>
+        </div>
+
+        <!-- ── CHECK PANEL ─── -->
+        <div class="panel on" id="panel-check">
+            <!-- Drop zone -->
+            <label class="drop-zone" id="dropZone">
+                <div class="dz-icon">🖼️</div>
+                <div class="dz-title">Drop your pic here</div>
+                <div class="dz-sub">or <span class="alt">tap to browse</span> · jpg, png, webp, heic</div>
+                <input type="file" id="fileInput" accept="image/*">
+            </label>
+
+            <!-- Preview -->
+            <div class="img-preview" id="imgPreview">
+                <img id="previewImg" alt="your photo">
+                <div class="img-preview-bar">
+                    <span class="img-preview-name" id="previewName">photo.jpg</span>
+                    <button class="img-change-btn" id="changePhotoBtn">✏️ change</button>
+                </div>
+            </div>
+
+            <!-- Check button -->
+            <button class="check-btn" id="checkBtn" disabled>✨ check post-worthiness</button>
+
+            <!-- Analyzing state -->
+            <div class="analyzing-box" id="analyzingBox">
+                <div class="an-title">🧠 AI is judging your pic…</div>
+                <div class="an-sub">first response takes ~40–90s · model running on your GPU</div>
+                <div class="think-dots">
+                    <div class="tdot"></div>
+                    <div class="tdot"></div>
+                    <div class="tdot"></div>
+                </div>
+                <div class="token-stream" id="tokenStream"></div>
+            </div>
+
+            <!-- Results -->
+            <div class="results scroll-y" id="results"></div>
+        </div>
+
+        <!-- ── LIVE PANEL ─── -->
+        <div class="panel" id="panel-live">
+            <div class="live-panel">
+                <div class="cam-wrap" id="camWrap">
+                    <div class="cam-no-access" id="camNoAccess">
+                        <div class="cam-na-icon">📷</div>
+                        <div class="cam-na-title">Allow camera access</div>
+                        <div class="cam-na-sub">PostCheck uses your camera to analyze vibes in real time. Nothing is
+                            recorded or sent anywhere.</div>
+                        <button class="cam-grant" id="camGrantBtn">Enable Camera</button>
+                    </div>
+                    <video id="camVideo" autoplay muted playsinline style="display:none"></video>
+                    <canvas id="camCanvas"></canvas>
+                    <div class="cam-overlay" id="camOverlay">
+                        <div class="cam-ov-top">
+                            <div>
+                                <div class="cam-ov-score" id="camScore">—</div>
+                                <div class="cam-ov-verdict" id="camVerdict">tap Vibe Scan to analyze</div>
+                            </div>
+                        </div>
+                        <div class="cam-ov-grid" id="camMiniScores"></div>
+                    </div>
+                </div>
+                <div class="cam-controls">
+                    <button class="cam-flip" id="camFlip" title="Flip camera">🔄</button>
+                    <button class="cam-scan-btn" id="camScanBtn" disabled>🔍 Vibe Scan</button>
+                </div>
+                <div class="analyzing-box" id="camAnalyzingBox">
+                    <div class="an-title">🧠 Reading the vibe…</div>
+                    <div class="an-sub">analyzing captured frame</div>
+                    <div class="think-dots">
+                        <div class="tdot"></div>
+                        <div class="tdot"></div>
+                        <div class="tdot"></div>
+                    </div>
+                    <div class="token-stream" id="camTokenStream"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── BATTLE PANEL ─── -->
+        <div class="panel" id="panel-battle">
+            <div class="battle-panel">
+                <div class="battle-head">
+                    <div class="battle-head-title">⚔️ Battle Mode</div>
+                    <div class="battle-head-sub">Drop 2–4 pics · AI picks the winner</div>
+                </div>
+                <div class="battle-grid" id="battleGrid">
+                    <!-- slots injected by JS -->
+                </div>
+                <button class="battle-go-btn" id="battleGoBtn" disabled>🏆 Find the Best One</button>
+                <div class="analyzing-box" id="battleAnalyzingBox">
+                    <div class="an-title">⚔️ Judging all contenders…</div>
+                    <div class="an-sub" id="battleAnalyzingSub">starting analysis</div>
+                    <div class="think-dots">
+                        <div class="tdot"></div>
+                        <div class="tdot"></div>
+                        <div class="tdot"></div>
+                    </div>
+                    <div class="token-stream" id="battleTokenStream"></div>
+                </div>
+                <div class="battle-result" id="battleResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast"></div>
+    <!-- PWA Bar -->
+    <div id="pwa-bar">
+        <div class="pwa-ic">📲</div>
+        <div class="pwa-txt">
+            <div class="pwa-t">Add to Home Screen</div>
+            <div class="pwa-s">Faster loads, works offline after first use</div>
+        </div>
+        <button class="pwa-install" id="pwaInstallBtn">Install</button>
+        <button class="pwa-x" id="pwaDismissBtn">✕</button>
+    </div>
+
+    <script type="module">
+        /* ══════════════════════════════════════════════════════════
+           CONSTANTS & STATE
+        ══════════════════════════════════════════════════════════ */
+        const MODEL_ID = 'onnx-community/Qwen3.5-0.8B-ONNX';
+        const CDN = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@next';
+
+        const S = {
+            model: null, processor: null, TextStreamer: null, RawImage: null,
+            isLoaded: false, isAnalyzing: false,
+            uploadedImg: null,   // { dataUrl, raw }
+            camStream: null, camFacing: 'environment',
+            battleImgs: [],      // array of { dataUrl, raw, label }
+            battleScores: [],
+            deferredPwa: null,
+        };
+
+        /* ══════════════════════════════════════════════════════════
+           DOM REFS
+        ══════════════════════════════════════════════════════════ */
+        const $ = id => document.getElementById(id);
+        const splash = $('splash');
+        const app = $('app');
+        const pbar = $('pbar');
+        const pbarPct = $('pbarPct');
+        const pbarPhase = $('pbarPhase');
+        const phaseIcon = $('phaseIcon');
+        const phaseTitle = $('phaseTitle');
+        const phaseSub = $('phaseSub');
+        const fileTicker = $('fileTicker');
+        const statusPill = $('statusPill');
+        const statusDot = $('statusDot');
+        const statusText = $('statusText');
+        const dropZone = $('dropZone');
+        const fileInput = $('fileInput');
+        const imgPreview = $('imgPreview');
+        const previewImg = $('previewImg');
+        const previewName = $('previewName');
+        const changeBtn = $('changePhotoBtn');
+        const checkBtn = $('checkBtn');
+        const analyzingBox = $('analyzingBox');
+        const tokenStream = $('tokenStream');
+        const resultsEl = $('results');
+        const camNoAccess = $('camNoAccess');
+        const camVideo = $('camVideo');
+        const camCanvas = $('camCanvas');
+        const camOverlay = $('camOverlay');
+        const camScore = $('camScore');
+        const camVerdict = $('camVerdict');
+        const camMini = $('camMiniScores');
+        const camGrantBtn = $('camGrantBtn');
+        const camFlipBtn = $('camFlip');
+        const camScanBtn = $('camScanBtn');
+        const camAnBox = $('camAnalyzingBox');
+        const camTokenStr = $('camTokenStream');
+        const battleGrid = $('battleGrid');
+        const battleGoBtn = $('battleGoBtn');
+        const battleAnBox = $('battleAnalyzingBox');
+        const battleAnSub = $('battleAnalyzingSub');
+        const battleTok = $('battleTokenStream');
+        const battleResult = $('battleResult');
+        const pwaBar = $('pwa-bar');
+        const toastEl = $('toast');
+
+        /* ══════════════════════════════════════════════════════════
+           CAROUSEL
+        ══════════════════════════════════════════════════════════ */
+        const carTrack = $('carTrack');
+        const carDots = $('carDots');
+        const CARD_COUNT = carTrack.children.length;
+        let carIdx = 0;
+        let carTimer;
+
+        function initCarousel() {
+            carDots.innerHTML = '';
+            for (let i = 0; i < CARD_COUNT; i++) {
+                const d = document.createElement('div');
+                d.className = 'cdot' + (i === 0 ? ' active' : '');
+                d.onclick = () => goCard(i);
+                carDots.appendChild(d);
+            }
+            startCarousel();
+        }
+        function goCard(i) {
+            carIdx = i;
+            const w = carTrack.children[0].offsetWidth + 14;
+            carTrack.style.transform = `translateX(-${i * w}px)`;
+            [...carDots.children].forEach((d, j) => d.className = 'cdot' + (j === i ? ' active' : ''));
+        }
+        function startCarousel() {
+            clearInterval(carTimer);
+            carTimer = setInterval(() => goCard((carIdx + 1) % CARD_COUNT), 4000);
+        }
+        initCarousel();
+
+        /* ══════════════════════════════════════════════════════════
+           MODEL LOADING
+        ══════════════════════════════════════════════════════════ */
+        let loadPct = 2;
+        const fileStatus = {}; // filename -> 'active'|'done'
+
+        function setPhase(icon, title, sub, pct, phase) {
+            phaseIcon.textContent = icon;
+            phaseTitle.textContent = title;
+            phaseSub.textContent = sub;
+            if (pct !== null) { loadPct = pct; pbar.style.width = pct + '%'; pbarPct.textContent = pct + '%'; }
+            if (phase) pbarPhase.textContent = phase;
+        }
+
+        function tickFile(name, state) {
+            fileStatus[name] = state;
+            const active = Object.entries(fileStatus).find(([, v]) => v === 'active');
+            const done = Object.entries(fileStatus).filter(([, v]) => v === 'done').length;
+            const total = Object.keys(fileStatus).length;
+            if (active) {
+                fileTicker.innerHTML = `<span class="active">⬇ ${shortName(active[0])}</span> · ${done}/${total} done`;
+            } else {
+                fileTicker.innerHTML = `<span class="done">✓ ${done}/${total} files downloaded</span>`;
+            }
+        }
+        function shortName(n) { return n.split('/').pop().replace('onnx/', ''); }
+
+        async function loadModel() {
+            setPhase('⏳', 'Loading processor…', 'Downloading tokenizer config', 5, 'Processor');
+
+            const { AutoProcessor, Qwen3_5ForConditionalGeneration, RawImage, TextStreamer, env } =
+                await import(CDN);
+
+            S.RawImage = RawImage;
+            S.TextStreamer = TextStreamer;
+            env.useBrowserCache = true;
+
+            setPhase('⚙️', 'Processor loaded!', 'Setting up vision encoder', 10, 'Processor ✓');
+
+            const processor = await AutoProcessor.from_pretrained(MODEL_ID);
+            S.processor = processor;
+
+            setPhase('⬇️', 'Downloading model…', 'This is big (~1 GB). WiFi = ❤️', 12, 'Downloading');
+
+            // Detect WebGPU + fp16
+            let device = 'wasm', visionDtype = 'fp32';
+            if (navigator.gpu) {
+                device = 'webgpu';
+                try {
+                    const adapter = await navigator.gpu.requestAdapter();
+                    if (adapter?.features?.has('shader-f16')) visionDtype = 'fp16';
+                } catch { }
+            }
+
+            const seenFiles = new Set();
+            let lastDoneTime = 0, shaderPhase = false, shaderTimer;
+
+            function onFileDone() {
+                lastDoneTime = performance.now();
+                if (shaderTimer) clearTimeout(shaderTimer);
+                shaderTimer = setTimeout(() => {
+                    if (!shaderPhase) {
+                        shaderPhase = true;
+                        setPhase('⚡', 'Compiling GPU shaders…', 'Silent phase — can take 5–20 min first time!', 75, 'Compiling');
+                    }
+                }, 4000);
+            }
+
+            const model = await Qwen3_5ForConditionalGeneration.from_pretrained(MODEL_ID, {
+                dtype: { embed_tokens: 'q4', vision_encoder: visionDtype, decoder_model_merged: 'q4' },
+                device,
+                progress_callback: ({ status, file, loaded, total }) => {
+                    if (!file) return;
+                    if (status === 'initiate' && !seenFiles.has(file)) {
+                        seenFiles.add(file);
+                        tickFile(file, 'active');
+                    }
+                    if (status === 'progress' && total) {
+                        const overall = 12 + Math.min(60, (loaded / total) * 60);
+                        pbar.style.width = overall + '%';
+                        pbarPct.textContent = Math.round(overall) + '%';
+                    }
+                    if (status === 'done') {
+                        tickFile(file, 'done');
+                        const done = Object.values(fileStatus).filter(v => v === 'done').length;
+                        const t = Object.keys(fileStatus).length || 7;
+                        const pct = 12 + Math.round((done / t) * 60);
+                        loadPct = pct; pbar.style.width = pct + '%'; pbarPct.textContent = pct + '%';
+                        if (file.endsWith('.onnx') || file.endsWith('.onnx_data') || file.endsWith('.json')) onFileDone();
+                    }
+                }
+            });
+
+            if (shaderTimer) clearTimeout(shaderTimer);
+            S.model = model;
+            S.isLoaded = true;
+
+            setPhase('🎉', 'AI is ready!', `Running on ${device.toUpperCase()} · ${visionDtype.toUpperCase()} vision`, 100, 'Ready ✓');
+            pbar.style.width = '100%';
+            pbarPct.textContent = '100%';
+            fileTicker.innerHTML = `<span class="done">✓ All files loaded · Running on ${device.toUpperCase()}</span>`;
+
+            // Transition to app
+            await sleep(1200);
+            clearInterval(carTimer);
+            splash.classList.add('hiding');
+            await sleep(600);
+            splash.style.display = 'none';
+            app.style.display = 'flex';
+            updateStatus(true);
+            showPwaBar();
+        }
+
+        function updateStatus(ready) {
+            if (ready) {
+                statusPill.className = 'status-pill ready';
+                statusDot.className = 'sdot';
+                statusText.textContent = 'AI Ready ✓';
+            } else {
+                statusPill.className = 'status-pill loading';
+                statusDot.className = 'sdot pulse';
+                statusText.textContent = 'Loading AI…';
+            }
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           ANALYSIS ENGINE
+        ══════════════════════════════════════════════════════════ */
+        const SCORE_KEYS = [
+            { key: 'main_character_energy', label: 'Main Character Energy', emoji: '🌟' },
+            { key: 'vibe_check', label: 'Vibe Check', emoji: '✨' },
+            { key: 'lighting_slay', label: 'Lighting Slay', emoji: '💡' },
+            { key: 'color_story', label: 'Color Story', emoji: '🎨' },
+            { key: 'composition_drip', label: 'Composition Drip', emoji: '📐' },
+            { key: 'authenticity_meter', label: 'Authenticity Meter', emoji: '🌿' },
+            { key: 'caption_worthy', label: 'Caption Worthy', emoji: '💬' },
+            { key: 'scroll_stop_factor', label: 'Scroll-Stop Factor', emoji: '🛑' },
+        ];
+
+        const PROMPT = `You are PostCheck AI — you rate images for social media like a Gen Z expert. Respond ONLY with valid JSON, nothing else.
+
+Analyze this image and return ONLY this JSON object (fill in real scores 0-100):
+{"scores":{"main_character_energy":75,"vibe_check":80,"lighting_slay":65,"color_story":85,"composition_drip":70,"authenticity_meter":88,"caption_worthy":75,"scroll_stop_factor":80},"overall":78,"verdict":"lowkey fire 🔥","vibe_label":"clean aesthetic","captions":["caption option 1","caption option 2 with question?","caption option 3"],"best_platform":"instagram","glow_ups":["specific improvement tip 1","specific improvement tip 2","specific improvement tip 3"],"posting_time":"Tuesday 7–9pm"}
+
+Scoring guide: main_character_energy=subject presence & command, vibe_check=mood coherence & aesthetic, lighting_slay=light quality & direction, color_story=palette harmony & pop, composition_drip=framing & balance, authenticity_meter=real vs over-staged, caption_worthy=story-telling potential, scroll_stop_factor=thumb-stopping power.
+verdict must be one of: "not it 💀"|"giving nothing 😐"|"has potential ✨"|"lowkey fire 🔥"|"main character approved ⭐"|"iconic era 🏆"
+vibe_label: 2-3 word aesthetic (dark academia, clean girl, cottagecore, y2k chaos, old money, goblincore, coastal grandma, hyperpop, etc)
+captions: 3 real suggestions (funny, moody, engaging)
+glow_ups: 3 specific actionable tips
+posting_time: best day+time`;
+
+        async function analyzeImage(rawImage, streamEl) {
+            const conversation = [{
+                role: 'user',
+                content: [{ type: 'image' }, { type: 'text', text: PROMPT }]
+            }];
+            const text = S.processor.apply_chat_template(conversation, { add_generation_prompt: true });
+            const inputs = await S.processor(text, rawImage);
+
+            let out = '';
+            const streamer = new S.TextStreamer(S.processor.tokenizer, {
+                skip_prompt: true,
+                skip_special_tokens: true,
+                callback_function: (tok) => {
+                    out += tok;
+                    if (streamEl) streamEl.textContent = out.slice(-120);
+                }
+            });
+
+            await S.model.generate({
+                ...inputs,
+                max_new_tokens: 500,
+                do_sample: false,
+                streamer
+            });
+
+            return parseAnalysis(out);
+        }
+
+        function parseAnalysis(text) {
+            const start = text.indexOf('{');
+            const end = text.lastIndexOf('}');
+            if (start === -1 || end <= start) return makeFallback();
+            try {
+                const cleaned = text.slice(start, end + 1).replace(/,(\s*[}\]])/g, '$1');
+                const data = JSON.parse(cleaned);
+                return validateAnalysis(data);
+            } catch {
+                return makeFallback();
+            }
+        }
+
+        function validateAnalysis(d) {
+            const s = d.scores || {};
+            const scores = {};
+            for (const { key } of SCORE_KEYS) {
+                const v = parseInt(s[key]);
+                scores[key] = isNaN(v) ? 65 : Math.min(100, Math.max(0, v));
+            }
+            const overall = parseInt(d.overall) || Math.round(Object.values(scores).reduce((a, b) => a + b, 0) / SCORE_KEYS.length);
+            return {
+                scores,
+                overall: Math.min(100, Math.max(0, overall)),
+                verdict: d.verdict || verdictFromScore(overall),
+                vibe_label: d.vibe_label || 'undefined aesthetic',
+                captions: (Array.isArray(d.captions) ? d.captions : []).slice(0, 3),
+                best_platform: d.best_platform || 'instagram',
+                glow_ups: (Array.isArray(d.glow_ups) ? d.glow_ups : []).slice(0, 3),
+                posting_time: d.posting_time || 'Tue–Thu 7–9pm',
+            };
+        }
+
+        function makeFallback() {
+            const scores = {};
+            for (const { key } of SCORE_KEYS) scores[key] = 50;
+            return validateAnalysis({ scores, overall: 50, verdict: 'has potential ✨' });
+        }
+
+        function verdictFromScore(n) {
+            if (n >= 86) return 'iconic era 🏆';
+            if (n >= 71) return 'main character approved ⭐';
+            if (n >= 56) return 'lowkey fire 🔥';
+            if (n >= 41) return 'has potential ✨';
+            if (n >= 26) return 'giving nothing 😐';
+            return 'not it 💀';
+        }
+
+        function scoreClass(n) {
+            if (n >= 80) return { c: 'c-epic', f: 'f-epic' };
+            if (n >= 60) return { c: 'c-high', f: 'f-high' };
+            if (n >= 40) return { c: 'c-mid', f: 'f-mid' };
+            return { c: 'c-low', f: 'f-low' };
+        }
+
+        function verdictColors(verdict) {
+            if (verdict.includes('🏆')) return ['#1b4332', '#40916c'];
+            if (verdict.includes('⭐')) return ['#023e8a', '#48cae4'];
+            if (verdict.includes('🔥')) return ['#7b2d00', '#e63946'];
+            if (verdict.includes('✨')) return ['#457b9d', '#a8dadc'];
+            if (verdict.includes('😐')) return ['#555', '#888'];
+            return ['#333', '#555'];
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           RENDER RESULTS
+        ══════════════════════════════════════════════════════════ */
+        function renderResults(data) {
+            const [c1, c2] = verdictColors(data.verdict);
+            const { c: rc, f: rf } = scoreClass(data.overall);
+            const pct = (data.overall / 100) * 283; // circumference ≈ 283 (r=45)
+
+            const platformEmoji = { instagram: '📸', tiktok: '🎵', pinterest: '📌', twitter: '🐦', bereal: '🟡' };
+            const pe = platformEmoji[data.best_platform] || '📱';
+
+            let capHTML = '';
+            data.captions.forEach((c, i) => {
+                capHTML += `<div class="cap-item" onclick="copyCaption(this,'${c.replace(/'/g, "\\'")}')">
+        <div class="cap-num">${i + 1}</div>
+        <div><div class="cap-text">${escHtml(c)}</div><div class="cap-copy-hint">tap to copy</div></div>
+      </div>`;
+            });
+
+            let glowHTML = '';
+            const glowIcons = ['🔆', '📏', '🎭'];
+            data.glow_ups.forEach((g, i) => {
+                glowHTML += `<div class="glow-item"><div class="glow-ic">${glowIcons[i] || '💡'}</div><div>${escHtml(g)}</div></div>`;
+            });
+
+            resultsEl.innerHTML = `
+      <div class="verdict-banner fade-in">
+        <div class="verdict-bg" style="background:linear-gradient(145deg,${c1},${c2})"></div>
+        <div class="verdict-inner">
+          <span class="v-emoji">${data.verdict.match(/\p{Emoji}/u)?.[0] || '✨'}</span>
+          <div class="v-text">${data.verdict.replace(/\p{Emoji}/gu, '').trim()}</div>
+          <div class="v-score">Post Score: ${data.overall}/100</div>
+          <div class="v-vibe">${data.vibe_label}</div>
+        </div>
+      </div>
+
+      <div class="ring-card fade-in">
+        <div class="ring-wrap">
+          <svg class="ring-svg" width="100" height="100" viewBox="0 0 100 100">
+            <circle class="ring-bg" cx="50" cy="50" r="45"/>
+            <circle class="ring-arc" cx="50" cy="50" r="45"
+              stroke="${getScoreColor(data.overall)}"
+              stroke-dasharray="283"
+              stroke-dashoffset="${283}"
+              id="ringArc"/>
+          </svg>
+          <div class="ring-label">
+            <div class="ring-num ${rc}" id="ringNum">0</div>
+            <div class="ring-tag">post score</div>
+          </div>
+        </div>
+        <div class="ring-info">
+          <div class="ring-info-title">Best for ${data.best_platform.charAt(0).toUpperCase() + data.best_platform.slice(1)}</div>
+          <div class="ring-info-body">Post on <strong>${data.posting_time}</strong> for max reach</div>
+          <span class="platform-tag">${pe} ${data.best_platform}</span>
+          <span class="best-time-tag">🕐 ${data.posting_time}</span>
+        </div>
+      </div>
+
+      <div class="bars-card fade-in">
+        <div class="bars-title">🔬 The breakdown</div>
+        ${SCORE_KEYS.map(({ key, label, emoji }) => {
+                const n = data.scores[key];
+                const { c, f } = scoreClass(n);
+                return `<div class="sbar">
+            <div class="sbar-row">
+              <div class="sbar-name">${emoji} ${label}</div>
+              <div class="sbar-val ${c}" data-score="${n}">0</div>
+            </div>
+            <div class="sbar-track"><div class="sbar-fill ${f}" data-target="${n}"></div></div>
+          </div>`;
+            }).join('')}
+      </div>
+
+      ${data.captions.length ? `
+      <div class="cap-card fade-in">
+        <div class="cap-title">💬 Caption inspo (tap to copy)</div>
+        ${capHTML}
+      </div>` : ''}
+
+      <div class="glow-card fade-in">
+        <div class="glow-title">💅 Glow-up tips</div>
+        ${glowHTML}
+      </div>
+
+      <button class="retry-btn" onclick="resetCheck()">📸 Try another pic</button>
+    `;
+
+            resultsEl.classList.add('on');
+
+            // Animate ring
+            requestAnimationFrame(() => {
+                const arc = document.getElementById('ringArc');
+                if (arc) {
+                    setTimeout(() => {
+                        arc.style.strokeDashoffset = 283 - pct;
+                        animateNum(document.getElementById('ringNum'), 0, data.overall, 1500);
+                    }, 100);
+                }
+                // Animate bars
+                document.querySelectorAll('.sbar-fill').forEach(el => {
+                    setTimeout(() => { el.style.width = el.dataset.target + '%'; }, 200);
+                });
+                document.querySelectorAll('[data-score]').forEach(el => {
+                    setTimeout(() => animateNum(el, 0, parseInt(el.dataset.score), 1200), 200);
+                });
+            });
+
+            // Fire confetti if score >= 70
+            if (data.overall >= 70) spawnConfetti();
+        }
+
+        function getScoreColor(n) {
+            if (n >= 80) return '#52b788';
+            if (n >= 60) return '#457b9d';
+            if (n >= 40) return '#f4a261';
+            return '#e63946';
+        }
+
+        function animateNum(el, from, to, dur) {
+            const start = performance.now();
+            function tick(now) {
+                const t = Math.min(1, (now - start) / dur);
+                const ease = 1 - Math.pow(1 - t, 3);
+                el.textContent = Math.round(from + (to - from) * ease);
+                if (t < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+        }
+
+        window.copyCaption = async function (el, text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                el.classList.add('copied');
+                showToast('Caption copied! ✓');
+                setTimeout(() => el.classList.remove('copied'), 2000);
+            } catch {
+                showToast('Tap & hold to copy manually');
+            }
+        };
+
+        window.resetCheck = function () {
+            S.uploadedImg = null;
+            imgPreview.style.display = 'none';
+            dropZone.classList.remove('hidden');
+            checkBtn.disabled = true;
+            analyzingBox.classList.remove('on');
+            resultsEl.classList.remove('on');
+            resultsEl.innerHTML = '';
+            tokenStream.textContent = '';
+            fileInput.value = '';
+        };
+
+        /* ══════════════════════════════════════════════════════════
+           CHECK PANEL LOGIC
+        ══════════════════════════════════════════════════════════ */
+        fileInput.addEventListener('change', e => {
+            const file = e.target.files?.[0];
+            if (file) loadFile(file);
+        });
+
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('over'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault(); dropZone.classList.remove('over');
+            const file = e.dataTransfer.files?.[0];
+            if (file && file.type.startsWith('image/')) loadFile(file);
+        });
+
+        changeBtn.addEventListener('click', () => fileInput.click());
+
+        async function loadFile(file) {
+            const url = URL.createObjectURL(file);
+            const dataUrl = await fileToDataUrl(file);
+            previewImg.src = url;
+            previewName.textContent = file.name;
+            imgPreview.style.display = 'block';
+            dropZone.classList.add('hidden');
+            S.uploadedImg = { dataUrl };
+            checkBtn.disabled = !S.isLoaded;
+        }
+
+        checkBtn.addEventListener('click', async () => {
+            if (!S.uploadedImg || !S.isLoaded || S.isAnalyzing) return;
+            S.isAnalyzing = true;
+            checkBtn.disabled = true;
+            analyzingBox.classList.add('on');
+            tokenStream.textContent = '';
+            resultsEl.classList.remove('on');
+
+            try {
+                const raw = await S.RawImage.read(S.uploadedImg.dataUrl);
+                const data = await analyzeImage(raw, tokenStream);
+                analyzingBox.classList.remove('on');
+                renderResults(data);
+                resultsEl.scrollIntoView({ behavior: 'smooth' });
+            } catch (err) {
+                analyzingBox.classList.remove('on');
+                showToast('⚠️ Analysis failed. Try again?');
+                console.error(err);
+                checkBtn.disabled = false;
+            }
+            S.isAnalyzing = false;
+        });
+
+        /* ══════════════════════════════════════════════════════════
+           CAMERA / LIVE PANEL
+        ══════════════════════════════════════════════════════════ */
+        camGrantBtn.addEventListener('click', startCamera);
+        camFlipBtn.addEventListener('click', () => {
+            S.camFacing = S.camFacing === 'environment' ? 'user' : 'environment';
+            startCamera();
+        });
+
+        async function startCamera() {
+            if (S.camStream) { S.camStream.getTracks().forEach(t => t.stop()); S.camStream = null; }
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: S.camFacing, width: { ideal: 1280 }, height: { ideal: 720 } }
+                });
+                S.camStream = stream;
+                camVideo.srcObject = stream;
+                camVideo.style.display = 'block';
+                camNoAccess.style.display = 'none';
+                camScanBtn.disabled = !S.isLoaded;
+                camOverlay.classList.add('on');
+            } catch (err) {
+                showToast('Camera access denied 😕');
+            }
+        }
+
+        camScanBtn.addEventListener('click', async () => {
+            if (!S.camStream || S.isAnalyzing || !S.isLoaded) return;
+            S.isAnalyzing = true;
+            camScanBtn.disabled = true;
+
+            // Capture frame
+            const ctx = camCanvas.getContext('2d');
+            camCanvas.width = camVideo.videoWidth || 640;
+            camCanvas.height = camVideo.videoHeight || 480;
+            ctx.drawImage(camVideo, 0, 0);
+            const dataUrl = camCanvas.toDataURL('image/jpeg', 0.85);
+
+            camAnBox.classList.add('on');
+            camTokenStr.textContent = '';
+            try {
+                const raw = await S.RawImage.read(dataUrl);
+                const data = await analyzeImage(raw, camTokenStr);
+                camAnBox.classList.remove('on');
+                renderCamOverlay(data);
+            } catch (err) {
+                camAnBox.classList.remove('on');
+                showToast('Scan failed, try again');
+            }
+            S.isAnalyzing = false;
+            camScanBtn.disabled = false;
+        });
+
+        function renderCamOverlay(data) {
+            camScore.textContent = data.overall;
+            camVerdict.textContent = data.verdict;
+            const mini = ['lighting_slay', 'color_story', 'vibe_check', 'scroll_stop_factor'];
+            camMini.innerHTML = mini.map(k => {
+                const lbl = SCORE_KEYS.find(s => s.key === k);
+                return `<div class="cam-ov-item"><span>${lbl?.emoji || ''} ${lbl?.label?.split(' ')[0]}</span><span class="cam-ov-val">${data.scores[k]}</span></div>`;
+            }).join('');
+            camOverlay.classList.add('on');
+        }
+
+        // Start camera when switching to Live tab
+        document.querySelector('[data-tab="live"]').addEventListener('click', () => {
+            if (!S.camStream) setTimeout(() => { if (navigator.mediaDevices) startCamera(); }, 300);
+        });
+
+        /* ══════════════════════════════════════════════════════════
+           BATTLE PANEL
+        ══════════════════════════════════════════════════════════ */
+        const MAX_BATTLE = 4;
+        S.battleImgs = [];
+
+        function initBattleSlots() {
+            battleGrid.innerHTML = '';
+            for (let i = 0; i < MAX_BATTLE; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'bslot';
+                slot.dataset.idx = i;
+                slot.innerHTML = `
+        <input type="file" accept="image/*" id="bfile${i}">
+        <div class="bslot-ph">📷</div>
+        <div class="bslot-lbl">Add photo ${i + 1}</div>
+      `;
+                slot.querySelector('input').addEventListener('change', e => {
+                    const f = e.target.files?.[0];
+                    if (f) loadBattleFile(f, i);
+                });
+                slot.addEventListener('click', () => slot.querySelector('input').click());
+                battleGrid.appendChild(slot);
+            }
+        }
+        initBattleSlots();
+
+        async function loadBattleFile(file, idx) {
+            const dataUrl = await fileToDataUrl(file);
+            S.battleImgs[idx] = { dataUrl, label: file.name };
+            const slot = battleGrid.children[idx];
+            let img = slot.querySelector('.bslot-img');
+            if (!img) {
+                img = document.createElement('img'); img.className = 'bslot-img'; slot.appendChild(img);
+            }
+            img.src = dataUrl;
+            slot.classList.add('has-img');
+            slot.querySelector('.bslot-ph').style.display = 'none';
+            slot.querySelector('.bslot-lbl').style.display = 'none';
+            const filled = S.battleImgs.filter(Boolean).length;
+            battleGoBtn.disabled = !S.isLoaded || filled < 2;
+        }
+
+        battleGoBtn.addEventListener('click', async () => {
+            const imgs = S.battleImgs.filter(Boolean);
+            if (imgs.length < 2 || !S.isLoaded || S.isAnalyzing) return;
+            S.isAnalyzing = true;
+            battleGoBtn.disabled = true;
+            battleAnBox.classList.add('on');
+            battleTok.textContent = '';
+            battleResult.classList.remove('on');
+            S.battleScores = [];
+
+            for (let i = 0; i < imgs.length; i++) {
+                battleAnSub.textContent = `Analyzing photo ${i + 1} of ${imgs.length}…`;
+                battleTok.textContent = '';
+                try {
+                    const raw = await S.RawImage.read(imgs[i].dataUrl);
+                    const data = await analyzeImage(raw, battleTok);
+                    S.battleScores[i] = data;
+                } catch {
+                    S.battleScores[i] = makeFallback();
+                }
+            }
+
+            battleAnBox.classList.remove('on');
+            renderBattleResult(imgs, S.battleScores);
+            S.isAnalyzing = false;
+            battleGoBtn.disabled = false;
+        });
+
+        function renderBattleResult(imgs, scores) {
+            const winIdx = scores.reduce((best, s, i) => s.overall > scores[best].overall ? i : best, 0);
+
+            // Update slots
+            [...battleGrid.children].forEach((slot, i) => {
+                if (!imgs[i]) return;
+                slot.classList.remove('winner', 'loser');
+                slot.classList.add(i === winIdx ? 'winner' : 'loser');
+                const scoreDiv = slot.querySelector('.bslot-score') || (() => {
+                    const d = document.createElement('div'); d.className = 'bslot-score'; slot.appendChild(d); return d;
+                })();
+                scoreDiv.innerHTML = `<div class="bslot-num">${scores[i].overall}</div><div class="bslot-v">${scores[i].verdict}</div>`;
+                if (i === winIdx) {
+                    const badge = document.createElement('div'); badge.className = 'winner-badge'; badge.textContent = '👑 Winner';
+                    slot.appendChild(badge);
+                }
+            });
+
+            // Render comparison
+            const loserIdx = scores.reduce((worst, s, i) => s.overall < scores[worst].overall ? i : worst, 0);
+            const winner = scores[winIdx], loser = scores[loserIdx];
+
+            const gridCols = imgs.map((_, i) => {
+                const s = scores[i];
+                const isWin = i === winIdx;
+                return `<div class="br-col${isWin ? ' best' : ''}">
+        <div class="br-col-name">${isWin ? '👑 ' : ''} Photo ${i + 1}</div>
+        <div class="br-col-score">${s.overall}</div>
+        <div class="br-col-verdict">${s.verdict}</div>
+        <div style="font-size:11px;margin-top:8px;color:var(--g600)">
+          ${SCORE_KEYS.slice(0, 4).map(k => `${k.emoji} ${k.label.split(' ')[0]}: <strong>${s.scores[k.key]}</strong>`).join('<br>')}
+        </div>
+      </div>`;
+            });
+
+            // Insert VS between pairs
+            const gridHTML = gridCols.length === 2
+                ? `<div class="br-col${winIdx === 0 ? ' best' : ''}">${gridCols[0].replace(/^<div[^>]*>/, '').replace(/<\/div>$/, '')}</div><div class="br-vs">VS</div><div class="br-col${winIdx === 1 ? ' best' : ''}">${gridCols[1].replace(/^<div[^>]*>/, '').replace(/<\/div>$/, '')}</div>`
+                : `<div style="display:grid;grid-template-columns:repeat(${gridCols.length},1fr);gap:8px">${gridCols.join('')}</div>`;
+
+            battleResult.innerHTML = `
+      <div class="br-title">👑 Photo ${winIdx + 1} wins the battle!</div>
+      <div class="br-grid" style="display:grid;grid-template-columns:repeat(${Math.min(4, imgs.length)},1fr);gap:8px">
+        ${imgs.map((_, i) => {
+                const s = scores[i];
+                const isWin = i === winIdx;
+                return `<div class="br-col${isWin ? ' best' : ''}">
+            <div class="br-col-name">${isWin ? '👑 ' : ''}Photo ${i + 1}</div>
+            <div class="br-col-score">${s.overall}</div>
+            <div class="br-col-verdict" style="font-size:10px">${s.verdict}</div>
+          </div>`;
+            }).join('')}
+      </div>
+      <div style="margin-top:12px;padding:12px;background:var(--dew);border-radius:var(--r-sm);font-size:13px;color:var(--deep)">
+        <strong>💡 Why Photo ${winIdx + 1} wins:</strong><br>
+        ${winner.vibe_label} vibes · ${winner.glow_ups[0] || 'strong overall composition'}
+      </div>
+    `;
+            battleResult.classList.add('on');
+            spawnConfetti();
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           TABS
+        ══════════════════════════════════════════════════════════ */
+        document.querySelectorAll('.tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+                btn.classList.add('on');
+                document.getElementById('panel-' + btn.dataset.tab).classList.add('on');
+            });
+        });
+
+        /* ══════════════════════════════════════════════════════════
+           PWA
+        ══════════════════════════════════════════════════════════ */
+        window.addEventListener('beforeinstallprompt', e => {
+            e.preventDefault();
+            S.deferredPwa = e;
+        });
+
+        function showPwaBar() {
+            setTimeout(() => {
+                if (S.deferredPwa) pwaBar.classList.add('show');
+            }, 3000);
+        }
+
+        $('pwaInstallBtn').addEventListener('click', async () => {
+            if (!S.deferredPwa) return;
+            S.deferredPwa.prompt();
+            const { outcome } = await S.deferredPwa.userChoice;
+            pwaBar.classList.remove('show');
+            if (outcome === 'accepted') showToast('App installed! 🎉 Loads instantly next time');
+            S.deferredPwa = null;
+        });
+
+        $('pwaDismissBtn').addEventListener('click', () => pwaBar.classList.remove('show'));
+
+        /* ══════════════════════════════════════════════════════════
+           UTILS
+        ══════════════════════════════════════════════════════════ */
+        let toastTimer;
+        function showToast(msg, dur = 3000) {
+            toastEl.textContent = msg;
+            toastEl.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toastEl.classList.remove('show'), dur);
+        }
+
+        function spawnConfetti() {
+            const colors = ['#e63946', '#457b9d', '#a8dadc', '#52b788', '#f4a261', '#1d3557'];
+            for (let i = 0; i < 40; i++) {
+                const p = document.createElement('div');
+                p.className = 'conf';
+                p.style.cssText = `
+        left:${Math.random() * 100}vw; top:-10px;
+        background:${colors[i % colors.length]};
+        animation:conf-fall ${1.5 + Math.random() * 1.5}s ease-in forwards;
+        animation-delay:${Math.random() * 0.6}s;
+        transform:rotate(${Math.random() * 360}deg);
+        width:${6 + Math.random() * 6}px; height:${6 + Math.random() * 6}px;
+        border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+      `;
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 3000);
+            }
+        }
+
+        function fileToDataUrl(file) {
+            return new Promise((res, rej) => {
+                const r = new FileReader();
+                r.onload = () => res(r.result);
+                r.onerror = rej;
+                r.readAsDataURL(file);
+            });
+        }
+
+        function escHtml(s) {
+            return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        /* ══════════════════════════════════════════════════════════
+           KICK OFF — show app shell immediately, load model in bg
+        ══════════════════════════════════════════════════════════ */
+
+        // Show app shell early (while model loads) but still show splash
+        // Model loading starts immediately
+        loadModel().catch(err => {
+            console.error('Model load failed:', err);
+            setPhase('❌', 'Load failed', err.message?.slice(0, 60) || 'Unknown error', null, 'Error');
+            // Still show app after error (limited functionality)
+            setTimeout(async () => {
+                splash.classList.add('hiding');
+                await sleep(600);
+                splash.style.display = 'none';
+                app.style.display = 'flex';
+                updateStatus(false);
+            }, 3000);
+        });
+
+        // Update check button state when model loads
+        const origCheckDisabled = setInterval(() => {
+            if (S.isLoaded) {
+                if (S.uploadedImg) checkBtn.disabled = false;
+                if (S.camStream) camScanBtn.disabled = false;
+                const filled = S.battleImgs.filter(Boolean).length;
+                battleGoBtn.disabled = filled < 2;
+                clearInterval(origCheckDisabled);
+            }
+        }, 1000);
+    </script>
+</body>
+
+</html>
