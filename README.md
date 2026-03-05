@@ -1,5 +1,3 @@
-# post ready? ✨
-
 <p align="center">
   <img src="https://img.shields.io/badge/post%20ready%3F-%E2%9C%A8-e63946?style=for-the-badge&labelColor=1d3557" alt="post ready? logo" width="280"/>
 </p>
@@ -9,7 +7,6 @@
   Runs 100% on-device · Zero uploads · No account needed · No cap.
 </p>
 
-🌐 **Live Demo**: [2796gaurav.github.io/post_ready](https://2796gaurav.github.io/post_ready/) | 🤗 **HF Spaces**: [huggingface.co/spaces/your-username/post-ready](https://huggingface.co/spaces/your-username/post-ready) *(coming soon)*
 
 
 <p align="center">
