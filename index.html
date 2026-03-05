@@ -240,6 +240,16 @@
             min-height: 0;
             overflow: hidden;
             padding: 12px 0 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .carousel-inner {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            overflow: hidden;
         }
 
         .carousel-label {
@@ -255,13 +265,14 @@
         .carousel-track {
             display: flex;
             gap: 14px;
-            padding: 0 20px;
+            padding: 0;
             transition: transform .55s cubic-bezier(.4, 0, .2, 1);
+            justify-content: flex-start;
         }
 
         .fact-card {
-            min-width: calc(100vw - 72px);
-            max-width: 360px;
+            min-width: 100%;
+            max-width: 400px;
             background: white;
             border-radius: var(--r-md);
             padding: 20px;
@@ -298,6 +309,7 @@
             justify-content: center;
             gap: 6px;
             padding: 10px 0;
+            width: 100%;
         }
 
         .cdot {
@@ -1551,6 +1563,15 @@
                 border-left: 1px solid var(--g200);
                 border-right: 1px solid var(--g200);
             }
+
+            .carousel-inner {
+                max-width: 360px;
+            }
+
+            .fact-card {
+                min-width: 360px;
+                max-width: 360px;
+            }
         }
     </style>
 </head>
@@ -1592,6 +1613,7 @@
         <!-- Carousel -->
         <div class="carousel-wrap">
             <div class="carousel-label">💭 fun facts while u wait</div>
+            <div class="carousel-inner">
             <div class="carousel-track" id="carTrack">
                 <div class="fact-card">
                     <div class="fact-icon">⚡</div>
@@ -1637,7 +1659,7 @@
                 </div>
             </div>
             <div class="carousel-dots" id="carDots"></div>
-        </div>
+            </div>
 
         <div class="pwa-nudge">📲 <strong>Pro tip:</strong> Add to Home Screen for instant loads after today!</div>
     </div>
@@ -1862,13 +1884,14 @@
         }
         function goCard(i) {
             carIdx = i;
-            const w = carTrack.children[0].offsetWidth + 14;
+            const inner = document.querySelector('.carousel-inner');
+            const w = inner ? inner.offsetWidth : (carTrack.children[0].offsetWidth + 14);
             carTrack.style.transform = `translateX(-${i * w}px)`;
             [...carDots.children].forEach((d, j) => d.className = 'cdot' + (j === i ? ' active' : ''));
         }
         function startCarousel() {
             clearInterval(carTimer);
-            carTimer = setInterval(() => goCard((carIdx + 1) % CARD_COUNT), 4000);
+            carTimer = setInterval(() => goCard((carIdx + 1) % CARD_COUNT), 6000);
         }
         initCarousel();
 
@@ -1899,8 +1922,25 @@
         }
         function shortName(n) { return n.split('/').pop().replace('onnx/', ''); }
 
+        // Loading phases configuration
+        const LOADING_PHASES = {
+            INIT: { icon: '📥', title: 'Initializing environment', sub: 'Setting up AI runtime', pct: 2 },
+            IMPORT: { icon: '⬇️', title: 'Loading AI libraries', sub: 'Fetching Transformers.js from CDN', pct: 5 },
+            PROCESSOR: { icon: '⚙️', title: 'Loading processor', sub: 'Downloading tokenizer & vision config', pct: 10 },
+            DETECT: { icon: '🔍', title: 'Detecting hardware', sub: 'Checking WebGPU support & capabilities', pct: 15 },
+            DOWNLOAD: { icon: '📥', title: 'Downloading model files', sub: 'Fetching ~500MB-1GB of AI weights', pct: 20 },
+            COMPILE: { icon: '⚡', title: 'Compiling GPU shaders', sub: 'This is the silent phase — can take 5-20 min first time!', pct: 75 },
+            OPTIMIZE: { icon: '🔧', title: 'Optimizing model', sub: 'Building compute graphs & memory buffers', pct: 90 },
+            READY: { icon: '🎉', title: 'AI is ready!', sub: 'All systems operational', pct: 100 }
+        };
+
+        let currentPhase = 'INIT';
+        let compileStartTime = 0;
+
         async function loadModel() {
-            setPhase('⏳', 'Loading processor…', 'Downloading tokenizer config', 5, 'Processor');
+            // Phase 1: Import libraries
+            setPhase(LOADING_PHASES.IMPORT.icon, LOADING_PHASES.IMPORT.title, LOADING_PHASES.IMPORT.sub, 
+                     LOADING_PHASES.IMPORT.pct, 'Importing');
 
             const { AutoProcessor, Qwen3_5ForConditionalGeneration, RawImage, TextStreamer, env } =
                 await import(CDN);
@@ -1909,12 +1949,24 @@
             S.TextStreamer = TextStreamer;
             env.useBrowserCache = true;
 
-            setPhase('⚙️', 'Processor loaded!', 'Setting up vision encoder', 10, 'Processor ✓');
+            // Phase 2: Load processor
+            currentPhase = 'PROCESSOR';
+            setPhase(LOADING_PHASES.PROCESSOR.icon, LOADING_PHASES.PROCESSOR.title, 
+                     LOADING_PHASES.PROCESSOR.sub, LOADING_PHASES.PROCESSOR.pct, 'Processor');
 
-            const processor = await AutoProcessor.from_pretrained(MODEL_ID);
+            const processor = await AutoProcessor.from_pretrained(MODEL_ID, {
+                progress_callback: ({ status, file }) => {
+                    if (status === 'progress' && file) {
+                        fileTicker.innerHTML = `<span class="active">⬇ ${shortName(file)}</span>`;
+                    }
+                }
+            });
             S.processor = processor;
 
-            setPhase('⬇️', 'Downloading model…', 'This is big (~1 GB). WiFi = ❤️', 12, 'Downloading');
+            // Phase 3: Hardware detection
+            currentPhase = 'DETECT';
+            setPhase(LOADING_PHASES.DETECT.icon, LOADING_PHASES.DETECT.title, 
+                     LOADING_PHASES.DETECT.sub, LOADING_PHASES.DETECT.pct, 'Detecting');
 
             // Detect WebGPU + fp16
             let device = 'wasm', visionDtype = 'fp32';
@@ -1925,19 +1977,25 @@
                     if (adapter?.features?.has('shader-f16')) visionDtype = 'fp16';
                 } catch { }
             }
+            await sleep(300); // Brief pause to show detection
+
+            // Phase 4: Download model files
+            currentPhase = 'DOWNLOAD';
+            setPhase(LOADING_PHASES.DOWNLOAD.icon, LOADING_PHASES.DOWNLOAD.title, 
+                     LOADING_PHASES.DOWNLOAD.sub, LOADING_PHASES.DOWNLOAD.pct, 'Downloading');
 
             const seenFiles = new Set();
-            let lastDoneTime = 0, shaderPhase = false, shaderTimer;
+            let downloadComplete = false;
+            let lastProgressTime = performance.now();
 
-            function onFileDone() {
-                lastDoneTime = performance.now();
-                if (shaderTimer) clearTimeout(shaderTimer);
-                shaderTimer = setTimeout(() => {
-                    if (!shaderPhase) {
-                        shaderPhase = true;
-                        setPhase('⚡', 'Compiling GPU shaders…', 'Silent phase — can take 5–20 min first time!', 75, 'Compiling');
-                    }
-                }, 4000);
+            function checkDownloadComplete() {
+                const done = Object.values(fileStatus).filter(v => v === 'done').length;
+                const total = Object.keys(fileStatus).length || 7;
+                if (done >= total && total > 0) {
+                    downloadComplete = true;
+                    return true;
+                }
+                return false;
             }
 
             const model = await Qwen3_5ForConditionalGeneration.from_pretrained(MODEL_ID, {
@@ -1945,34 +2003,81 @@
                 device,
                 progress_callback: ({ status, file, loaded, total }) => {
                     if (!file) return;
+                    
                     if (status === 'initiate' && !seenFiles.has(file)) {
                         seenFiles.add(file);
                         tickFile(file, 'active');
                     }
+                    
                     if (status === 'progress' && total) {
-                        const overall = 12 + Math.min(60, (loaded / total) * 60);
-                        pbar.style.width = overall + '%';
-                        pbarPct.textContent = Math.round(overall) + '%';
+                        lastProgressTime = performance.now();
+                        // Progress from 20% to 55% during download
+                        const fileProgress = loaded / total;
+                        const done = Object.values(fileStatus).filter(v => v === 'done').length;
+                        const t = Math.max(seenFiles.size, 1);
+                        const overall = LOADING_PHASES.DOWNLOAD.pct + (fileProgress * (55 - LOADING_PHASES.DOWNLOAD.pct) / t) + ((done / t) * (55 - LOADING_PHASES.DOWNLOAD.pct));
+                        pbar.style.width = Math.min(55, overall) + '%';
+                        pbarPct.textContent = Math.round(Math.min(55, overall)) + '%';
                     }
+                    
                     if (status === 'done') {
                         tickFile(file, 'done');
                         const done = Object.values(fileStatus).filter(v => v === 'done').length;
-                        const t = Object.keys(fileStatus).length || 7;
-                        const pct = 12 + Math.round((done / t) * 60);
-                        loadPct = pct; pbar.style.width = pct + '%'; pbarPct.textContent = pct + '%';
-                        if (file.endsWith('.onnx') || file.endsWith('.onnx_data') || file.endsWith('.json')) onFileDone();
+                        const t = Object.keys(fileStatus).length || seenFiles.size || 7;
+                        // Progress from 20% to 55%
+                        const pct = LOADING_PHASES.DOWNLOAD.pct + Math.round((done / t) * (55 - LOADING_PHASES.DOWNLOAD.pct));
+                        loadPct = pct; 
+                        pbar.style.width = pct + '%'; 
+                        pbarPct.textContent = pct + '%';
                     }
                 }
             });
 
-            if (shaderTimer) clearTimeout(shaderTimer);
+            // Phase 5: Compiling (happens after download, before model is usable)
+            currentPhase = 'COMPILE';
+            compileStartTime = performance.now();
+            setPhase(LOADING_PHASES.COMPILE.icon, LOADING_PHASES.COMPILE.title, 
+                     `${LOADING_PHASES.COMPILE.sub} (${device.toUpperCase()})`, 60, 'Compiling');
+
+            // Show compile progress simulation
+            let compileProgress = 60;
+            const compileInterval = setInterval(() => {
+                const elapsed = (performance.now() - compileStartTime) / 1000;
+                // Slowly increase from 60% to 85% during compilation
+                compileProgress = Math.min(85, 60 + (elapsed / 10)); // 10 seconds to reach 85%
+                pbar.style.width = compileProgress + '%';
+                pbarPct.textContent = Math.round(compileProgress) + '%';
+                
+                // Update subtext with elapsed time
+                const mins = Math.floor(elapsed / 60);
+                const secs = Math.floor(elapsed % 60);
+                const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+                phaseSub.textContent = `${LOADING_PHASES.COMPILE.sub} (${device.toUpperCase()}) · ${timeStr} elapsed`;
+            }, 500);
+
+            // Wait a bit to let the model finish internal compilation
+            await sleep(2000);
+            clearInterval(compileInterval);
+
+            // Phase 6: Final optimization
+            currentPhase = 'OPTIMIZE';
+            setPhase(LOADING_PHASES.OPTIMIZE.icon, LOADING_PHASES.OPTIMIZE.title, 
+                     LOADING_PHASES.OPTIMIZE.sub, 90, 'Optimizing');
+            pbar.style.width = '90%';
+            pbarPct.textContent = '90%';
+            await sleep(800);
+
             S.model = model;
             S.isLoaded = true;
 
-            setPhase('🎉', 'AI is ready!', `Running on ${device.toUpperCase()} · ${visionDtype.toUpperCase()} vision`, 100, 'Ready ✓');
+            // Phase 7: Ready
+            currentPhase = 'READY';
+            setPhase(LOADING_PHASES.READY.icon, LOADING_PHASES.READY.title, 
+                     `Running on ${device.toUpperCase()} · ${visionDtype.toUpperCase()} precision`, 
+                     LOADING_PHASES.READY.pct, 'Ready ✓');
             pbar.style.width = '100%';
             pbarPct.textContent = '100%';
-            fileTicker.innerHTML = `<span class="done">✓ All files loaded · Running on ${device.toUpperCase()}</span>`;
+            fileTicker.innerHTML = `<span class="done">✓ All phases complete · ${device.toUpperCase()} · ${visionDtype.toUpperCase()}</span>`;
 
             // Transition to app
             await sleep(1200);
