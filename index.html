@@ -5,59 +5,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>post ready? ✨</title>
-    <meta name="description" content="Your AI bestie that tells you if your photo slaps. Private. On-device. No cap.">
+    <meta name="description" content="Your on-device AI bestie that tells you if your photo slaps. 100% private.">
     <meta name="theme-color" content="#f1faee">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="post ready?">
-    <link rel="manifest" href="manifest.json">
-    <meta property="og:title" content="post ready? ✨">
-    <meta property="og:description"
-        content="AI tells you if your photo is post-worthy. 100% private. Runs on your device.">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300;400;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&display=swap"
         rel="stylesheet">
     <style>
-        /* ── CSS Variables ─────────────────────────────────────── */
         :root {
             --red: #e63946;
             --dew: #f1faee;
             --frost: #a8dadc;
             --steel: #457b9d;
             --deep: #1d3557;
-            --white: #ffffff;
+            --white: #fff;
             --g100: #f8f9fa;
             --g200: #e9ecef;
             --g400: #adb5bd;
             --g600: #6c757d;
             --amber: #f4a261;
             --green: #52b788;
-            --r-sm: 12px;
-            --r-md: 20px;
-            --r-lg: 28px;
-            --r-xl: 40px;
-            --sh-sm: 0 2px 8px rgba(29, 53, 87, .08);
-            --sh-md: 0 4px 20px rgba(29, 53, 87, .12);
-            --sh-lg: 0 8px 40px rgba(29, 53, 87, .18);
+            --r-sm: 10px;
+            --r-md: 18px;
+            --r-lg: 26px;
+            --sh: 0 4px 24px rgba(29, 53, 87, .10);
             --fd: 'Bricolage Grotesque', sans-serif;
             --fb: 'DM Sans', sans-serif;
-            --ease: 0.3s cubic-bezier(.4, 0, .2, 1);
+            --ease: .28s cubic-bezier(.4, 0, .2, 1);
         }
 
-        /* ── Reset ─────────────────────────────────────────────── */
         *,
         *::before,
         *::after {
             box-sizing: border-box;
             margin: 0;
-            padding: 0;
+            padding: 0
         }
 
         html {
             -webkit-tap-highlight-color: transparent;
-            scroll-behavior: smooth;
+            scroll-behavior: smooth
         }
 
         body {
@@ -66,12 +58,12 @@
             color: var(--deep);
             min-height: 100dvh;
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
+            -webkit-font-smoothing: antialiased
         }
 
         img {
             max-width: 100%;
-            display: block;
+            display: block
         }
 
         button {
@@ -80,331 +72,346 @@
             border: none;
             outline: none;
             -webkit-appearance: none;
-            background: none;
+            background: none
         }
 
-        input[type="file"] {
-            display: none;
+        input[type=file] {
+            display: none
         }
 
-        /* ── SPLASH SCREEN ─────────────────────────────────────── */
+        /* ── CENTERING SHELL ── */
+        #app-shell {
+            max-width: 520px;
+            margin: 0 auto;
+            width: 100%;
+            border-left: 1px solid var(--g200);
+            border-right: 1px solid var(--g200);
+            min-height: 100dvh;
+            background: var(--white)
+        }
+
+        @media(max-width:540px) {
+            #app-shell {
+                border: none
+            }
+        }
+
+        /* ══════════════════════════
+   SPLASH
+══════════════════════════ */
         #splash {
             position: fixed;
             inset: 0;
-            z-index: 9999;
-            background: var(--dew);
+            z-index: 999;
+            background: var(--white);
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            transition: opacity .5s ease, transform .5s ease;
+        }
+
+        #splash.hide {
+            opacity: 0;
+            transform: scale(1.02);
+            pointer-events: none
+        }
+
+        .sp-inner {
+            width: 100%;
+            max-width: 520px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            overflow: hidden;
-            transition: opacity .6s ease, transform .6s ease;
+            padding: 0 20px;
+            overflow-y: auto;
+            border-left: 1px solid var(--g200);
+            border-right: 1px solid var(--g200)
         }
 
-        #splash.hiding {
-            opacity: 0;
-            transform: scale(1.03);
-            pointer-events: none;
+        @media(max-width:540px) {
+            .sp-inner {
+                border: none
+            }
         }
 
-        .splash-top {
+        .sp-hero {
             text-align: center;
-            padding: 48px 24px 20px;
+            padding: 36px 0 20px;
+            flex-shrink: 0
         }
 
-        .splash-logo {
+        .sp-wordmark {
             font-family: var(--fd);
             font-weight: 800;
-            font-size: clamp(38px, 10vw, 56px);
+            font-size: clamp(32px, 8.5vw, 50px);
             letter-spacing: -.03em;
-            line-height: 1;
             color: var(--deep);
+            line-height: 1
         }
 
-        .splash-logo .dot {
+        .sp-wordmark .dot {
+            color: var(--red)
+        }
+
+        .sp-tag {
+            margin-top: 8px;
+            font-size: clamp(13px, 3.5vw, 15px);
+            color: var(--steel)
+        }
+
+        .sp-tag b {
             color: var(--red);
+            font-weight: 600
         }
 
-        .splash-sub {
-            margin-top: 10px;
-            font-size: clamp(14px, 3.8vw, 17px);
-            color: var(--steel);
-            font-weight: 400;
+        .sp-pills {
+            display: flex;
+            gap: 7px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 14px 0 0
         }
 
-        .splash-sub .spicy {
-            color: var(--red);
+        .sp-pill {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 11px;
+            background: var(--dew);
+            border-radius: 999px;
+            font-size: 11.5px;
             font-weight: 600;
+            color: var(--steel)
         }
 
-        /* Loading widget */
-        .load-card {
-            width: calc(100% - 40px);
-            max-width: 400px;
-            background: white;
+        .sp-warn {
+            background: #fffbec;
+            border: 1.5px solid var(--amber);
+            border-radius: var(--r-md);
+            padding: 10px 14px;
+            font-size: 11.5px;
+            color: #7c5800;
+            line-height: 1.5;
+            margin: 14px 0 10px;
+            flex-shrink: 0
+        }
+
+        /* Load card */
+        .load-box {
+            background: var(--white);
+            border: 1.5px solid var(--g200);
             border-radius: var(--r-lg);
-            padding: 20px 22px;
-            box-shadow: var(--sh-md);
-            margin: 0 auto 8px;
+            padding: 16px 18px;
+            margin-bottom: 10px;
+            box-shadow: var(--sh);
+            flex-shrink: 0
         }
 
-        .load-phase-row {
+        .load-row {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 14px;
+            margin-bottom: 12px
         }
 
-        .load-phase-icon {
-            font-size: 22px;
-            min-width: 30px;
+        .load-icon {
+            font-size: 20px;
+            width: 26px;
             text-align: center;
+            flex-shrink: 0
         }
 
-        .load-phase-title {
+        .load-title {
             font-family: var(--fd);
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
-            color: var(--deep);
+            color: var(--deep)
         }
 
-        .load-phase-sub {
-            font-size: 11px;
+        .load-sub {
+            font-size: 10.5px;
             color: var(--g600);
             margin-top: 2px;
+            line-height: 1.45
         }
 
-        .pbar-wrap {
+        .pbar-track {
             background: var(--g200);
             border-radius: 999px;
-            height: 10px;
-            overflow: hidden;
+            height: 8px;
+            overflow: hidden
         }
 
         .pbar-fill {
             height: 100%;
             border-radius: 999px;
             background: linear-gradient(90deg, var(--steel), var(--frost));
-            transition: width 1s ease;
-            width: 2%;
+            transition: width .8s ease;
+            width: 1%
         }
 
-        .pbar-stats {
+        .pbar-foot {
             display: flex;
             justify-content: space-between;
             margin-top: 5px;
-            font-size: 11px;
-            color: var(--g600);
+            font-size: 10px;
+            color: var(--g600)
         }
 
-        .file-ticker {
-            margin-top: 10px;
-            font-size: 10.5px;
-            color: var(--g400);
+        .file-tick {
+            margin-top: 7px;
+            font-size: 10px;
             font-family: monospace;
+            color: var(--g400);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            min-height: 16px;
+            min-height: 13px
         }
 
-        .file-ticker .done {
-            color: var(--green);
+        .file-tick .ok {
+            color: var(--green)
         }
 
-        .file-ticker .active {
-            color: var(--steel);
+        .file-tick .dl {
+            color: var(--steel)
         }
 
-        /* Storage warning */
-        .storage-warn {
-            width: calc(100% - 40px);
-            max-width: 400px;
-            margin: 0 auto 8px;
-            background: #fff8e7;
-            border: 1.5px solid var(--amber);
-            border-radius: var(--r-md);
-            padding: 12px 16px;
-            font-size: 12px;
-            color: #7c5800;
-            line-height: 1.5;
-        }
-
-        .storage-warn strong {
-            font-weight: 700;
-        }
-
-        /* Fun facts carousel */
-        .carousel-wrap {
+        /* Facts */
+        .sp-facts {
             flex: 1;
-            width: 100%;
-            min-height: 0;
-            overflow: hidden;
-            padding: 12px 0 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            overflow-y: auto;
+            padding-bottom: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--g200) transparent
         }
 
-        .carousel-inner {
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
-            overflow: hidden;
+        .sp-facts::-webkit-scrollbar {
+            width: 3px
         }
 
-        .carousel-label {
+        .sp-facts::-webkit-scrollbar-thumb {
+            background: var(--g200);
+            border-radius: 2px
+        }
+
+        .facts-label {
             text-align: center;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
-            letter-spacing: .1em;
+            letter-spacing: .12em;
             text-transform: uppercase;
             color: var(--steel);
-            margin-bottom: 12px;
+            margin: 10px 0 9px
         }
 
-        .carousel-track {
+        .fact {
             display: flex;
-            gap: 14px;
-            padding: 0;
-            transition: transform .55s cubic-bezier(.4, 0, .2, 1);
-            justify-content: flex-start;
-        }
-
-        .fact-card {
-            min-width: 100%;
-            max-width: 400px;
-            background: white;
+            gap: 11px;
+            padding: 11px 13px;
+            background: var(--g100);
             border-radius: var(--r-md);
-            padding: 20px;
-            box-shadow: var(--sh-sm);
+            margin-bottom: 7px
+        }
+
+        .fact-em {
+            font-size: 22px;
             flex-shrink: 0;
+            line-height: 1.2;
+            margin-top: 1px
         }
 
-        .fact-icon {
-            font-size: 36px;
-            margin-bottom: 10px;
-        }
-
-        .fact-title {
+        .fact-t {
             font-family: var(--fd);
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--deep);
-            margin-bottom: 6px;
-        }
-
-        .fact-body {
             font-size: 13px;
-            color: var(--g600);
-            line-height: 1.65;
-        }
-
-        .fact-body .hi {
-            color: var(--red);
-            font-weight: 600;
-        }
-
-        .carousel-dots {
-            display: flex;
-            justify-content: center;
-            gap: 6px;
-            padding: 10px 0;
-            width: 100%;
-        }
-
-        .cdot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--g200);
-            transition: all .3s;
-        }
-
-        .cdot.active {
-            background: var(--steel);
-            width: 18px;
-            border-radius: 3px;
-        }
-
-        .pwa-nudge {
-            padding: 8px 20px 20px;
-            text-align: center;
-            font-size: 12px;
-            color: var(--steel);
-        }
-
-        .pwa-nudge strong {
             font-weight: 700;
             color: var(--deep);
+            margin-bottom: 3px
         }
 
-        /* ── MAIN APP ──────────────────────────────────────────── */
+        .fact-b {
+            font-size: 11.5px;
+            color: var(--g600);
+            line-height: 1.55
+        }
+
+        .fact-b b {
+            color: var(--red);
+            font-weight: 600
+        }
+
+        /* ══════════════════════════
+   MAIN APP
+══════════════════════════ */
         #app {
-            min-height: 100dvh;
-            display: flex;
-            flex-direction: column;
             display: none;
+            flex-direction: column;
+            min-height: 100dvh
+        }
+
+        #app.on {
+            display: flex
         }
 
         .app-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 18px;
-            background: white;
+            padding: 13px 18px;
+            background: var(--white);
             border-bottom: 1.5px solid var(--g200);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 100
         }
 
-        .app-logo {
+        .logo {
             font-family: var(--fd);
-            font-size: 21px;
+            font-size: 20px;
             font-weight: 800;
             letter-spacing: -.02em;
-            color: var(--deep);
+            color: var(--deep)
         }
 
-        .app-logo .dot {
-            color: var(--red);
+        .logo .dot {
+            color: var(--red)
         }
 
-        .status-pill {
+        .status-badge {
             display: flex;
             align-items: center;
             gap: 5px;
-            font-size: 11.5px;
+            font-size: 11px;
             font-weight: 600;
-            padding: 5px 11px;
+            padding: 4px 10px;
             border-radius: 999px;
             background: var(--g100);
             color: var(--g600);
-            transition: all var(--ease);
+            transition: all var(--ease)
         }
 
-        .status-pill.ready {
+        .status-badge.rdy {
             background: #d8f3dc;
-            color: #1b4332;
+            color: #1b4332
         }
 
-        .status-pill.loading {
+        .status-badge.ld {
             background: #fff3cd;
-            color: #6d4c0a;
+            color: #7c4f0a
         }
 
         .sdot {
-            width: 7px;
-            height: 7px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: currentColor;
+            flex-shrink: 0
         }
 
         .sdot.pulse {
-            animation: sdpulse 1.5s ease infinite;
+            animation: pulse 1.4s ease infinite
         }
 
-        @keyframes sdpulse {
+        @keyframes pulse {
 
             0%,
             100% {
@@ -413,1115 +420,743 @@
             }
 
             50% {
-                opacity: .4;
-                transform: scale(.7)
+                opacity: .25;
+                transform: scale(.55)
             }
         }
 
-        /* Tabs */
-        .tabs {
+        /* ── SECTION 1: UPLOAD ── */
+        #sec-upload {
+            padding: 16px;
             display: flex;
-            gap: 8px;
-            padding: 12px 14px;
-            background: white;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .tabs::-webkit-scrollbar {
-            display: none;
-        }
-
-        .tab {
-            flex: 1;
-            min-width: 82px;
-            padding: 10px 10px;
-            border-radius: var(--r-sm);
-            font-size: 12.5px;
-            font-weight: 600;
-            color: var(--g600);
-            background: var(--g100);
-            border: 2px solid transparent;
-            text-align: center;
-            transition: all var(--ease);
-            white-space: nowrap;
-        }
-
-        .tab.on {
-            background: var(--deep);
-            color: white;
-            border-color: var(--deep);
-        }
-
-        /* Tab panels */
-        .panel {
-            display: none;
-            flex: 1;
             flex-direction: column;
+            gap: 11px
         }
 
-        .panel.on {
-            display: flex;
-        }
-
-        /* ── CHECK PANEL ──────────────────────────────────────── */
         .drop-zone {
-            margin: 14px;
             border: 2.5px dashed var(--frost);
             border-radius: var(--r-lg);
-            padding: 44px 20px;
+            padding: 38px 20px;
             text-align: center;
             background: var(--dew);
             cursor: pointer;
-            transition: all var(--ease);
-            position: relative;
-            overflow: hidden;
+            transition: all var(--ease)
         }
 
+        .drop-zone:hover,
         .drop-zone.over {
             border-color: var(--steel);
-            background: #e3f2f7;
+            background: #e5f4f6
         }
 
-        .drop-zone.hidden {
-            display: none;
+        .drop-zone.gone {
+            display: none
         }
 
         .dz-icon {
-            font-size: 52px;
-            margin-bottom: 14px;
+            font-size: 44px;
+            margin-bottom: 11px
         }
 
-        .dz-title {
-            font-family: var(--fd);
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--deep);
-            margin-bottom: 6px;
-        }
-
-        .dz-sub {
-            font-size: 14px;
-            color: var(--g600);
-        }
-
-        .dz-sub .alt {
-            color: var(--steel);
-            font-weight: 600;
-            text-decoration: underline;
-        }
-
-        .img-preview {
-            margin: 14px;
-            border-radius: var(--r-lg);
-            overflow: hidden;
-            position: relative;
-            background: var(--g100);
-            display: none;
-        }
-
-        .img-preview img {
-            width: 100%;
-            max-height: 320px;
-            object-fit: cover;
-        }
-
-        .img-preview-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 14px;
-            background: white;
-            border-top: 1px solid var(--g200);
-        }
-
-        .img-preview-name {
-            font-size: 12px;
-            color: var(--g600);
-            font-weight: 500;
-        }
-
-        .img-change-btn {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--steel);
-            padding: 4px 10px;
-            border-radius: 999px;
-            background: var(--g100);
-        }
-
-        .check-btn {
-            margin: 0 14px 14px;
-            padding: 17px;
-            background: var(--red);
-            color: white;
-            border-radius: var(--r-md);
+        .dz-h {
             font-family: var(--fd);
             font-size: 18px;
             font-weight: 700;
-            letter-spacing: -.01em;
-            width: calc(100% - 28px);
-            box-shadow: 0 4px 22px rgba(230, 57, 70, .32);
+            color: var(--deep);
+            margin-bottom: 5px
+        }
+
+        .dz-s {
+            font-size: 13px;
+            color: var(--g600)
+        }
+
+        .dz-s u {
+            color: var(--steel);
+            font-weight: 600;
+            text-decoration-color: var(--frost)
+        }
+
+        .cam-row {
+            display: flex;
+            gap: 8px
+        }
+
+        .cam-btn {
+            flex: 1;
+            padding: 11px 8px;
+            border: 1.5px solid var(--g200);
+            border-radius: var(--r-md);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--deep);
+            background: var(--g100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
             transition: all var(--ease);
+            cursor: pointer
         }
 
-        .check-btn:hover {
+        .cam-btn:hover {
+            background: var(--g200)
+        }
+
+        .cam-btn.primary {
+            background: var(--deep);
+            color: var(--white);
+            border-color: var(--deep)
+        }
+
+        .cam-btn.primary:hover {
+            background: #253f6a
+        }
+
+        .cam-row.gone {
+            display: none
+        }
+
+        .preview {
+            border-radius: var(--r-lg);
+            overflow: hidden;
+            border: 1.5px solid var(--g200);
+            display: none
+        }
+
+        .preview img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            display: block
+        }
+
+        .preview-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 13px;
+            background: var(--white)
+        }
+
+        .preview-name {
+            font-size: 11.5px;
+            color: var(--g600);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 60%
+        }
+
+        .change-btn {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--steel);
+            padding: 4px 9px;
+            border-radius: 999px;
+            background: var(--g100);
+            cursor: pointer
+        }
+
+        .change-btn:hover {
+            background: var(--g200)
+        }
+
+        .analyze-btn {
+            padding: 15px;
+            background: var(--red);
+            color: var(--white);
+            border-radius: var(--r-md);
+            font-family: var(--fd);
+            font-size: 17px;
+            font-weight: 700;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(230, 57, 70, .28);
+            transition: all var(--ease);
+            cursor: pointer
+        }
+
+        .analyze-btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 6px 30px rgba(230, 57, 70, .42);
+            box-shadow: 0 6px 28px rgba(230, 57, 70, .38)
         }
 
-        .check-btn:active {
-            transform: translateY(0);
+        .analyze-btn:active:not(:disabled) {
+            transform: translateY(0)
         }
 
-        .check-btn:disabled {
+        .analyze-btn:disabled {
             background: var(--g400);
             box-shadow: none;
-            cursor: not-allowed;
-            transform: none;
+            cursor: not-allowed
         }
 
-        /* Analyzing state */
-        .analyzing-box {
-            margin: 0 14px 14px;
+        .an-box {
             background: var(--deep);
             border-radius: var(--r-lg);
-            padding: 22px;
+            padding: 20px;
             text-align: center;
             display: none;
-            color: white;
+            color: var(--white)
         }
 
-        .analyzing-box.on {
-            display: block;
+        .an-box.on {
+            display: block
         }
 
-        .an-title {
+        .an-h {
             font-family: var(--fd);
-            font-size: 16px;
+            font-size: 14.5px;
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 4px
         }
 
-        .an-sub {
-            font-size: 12px;
-            color: rgba(255, 255, 255, .6);
-            margin-bottom: 14px;
+        .an-s {
+            font-size: 11px;
+            color: rgba(255, 255, 255, .5);
+            margin-bottom: 12px
         }
 
-        .think-dots {
+        .dots {
             display: flex;
             justify-content: center;
-            gap: 8px;
-            margin: 10px 0;
+            gap: 7px
         }
 
-        .tdot {
-            width: 9px;
-            height: 9px;
+        .d {
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: var(--frost);
-            animation: tdpulse 1.5s ease infinite;
+            animation: dp 1.4s ease infinite
         }
 
-        .tdot:nth-child(2) {
-            animation-delay: .22s;
+        .d:nth-child(2) {
+            animation-delay: .2s
         }
 
-        .tdot:nth-child(3) {
-            animation-delay: .44s;
+        .d:nth-child(3) {
+            animation-delay: .4s
         }
 
-        @keyframes tdpulse {
+        @keyframes dp {
 
             0%,
             100% {
                 transform: scale(1);
-                opacity: .4
+                opacity: .3
             }
 
             50% {
-                transform: scale(1.4);
+                transform: scale(1.5);
                 opacity: 1
             }
         }
 
-        .token-stream {
-            font-size: 9.5px;
-            color: rgba(168, 218, 220, .55);
+        .tok {
+            font-size: 9px;
+            color: rgba(168, 218, 220, .4);
             font-family: monospace;
-            max-height: 36px;
+            max-height: 30px;
             overflow: hidden;
             word-break: break-all;
             line-height: 1.5;
-            border-top: 1px solid rgba(255, 255, 255, .1);
-            padding-top: 10px;
-            margin-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, .07);
+            padding-top: 8px;
+            margin-top: 10px
         }
 
-        /* ── RESULTS ───────────────────────────────────────────── */
-        .results {
-            margin: 0 14px 80px;
+        /* Camera modal */
+        #cam-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: rgba(29, 53, 87, .9);
             display: none;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 0
         }
 
-        .results.on {
-            display: block;
+        #cam-modal.on {
+            display: flex
         }
 
-        /* Verdict banner */
+        @media(min-width:540px) {
+            #cam-modal {
+                align-items: center;
+                padding: 20px
+            }
+        }
+
+        .cam-inner {
+            width: 100%;
+            max-width: 520px;
+            background: var(--white);
+            border-radius: var(--r-lg) var(--r-lg) 0 0;
+            overflow: hidden
+        }
+
+        @media(min-width:540px) {
+            .cam-inner {
+                border-radius: var(--r-lg)
+            }
+        }
+
+        .cam-vid-wrap {
+            background: #000;
+            aspect-ratio: 4/3;
+            position: relative
+        }
+
+        #camVid {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block
+        }
+
+        #camCanvas {
+            display: none
+        }
+
+        .cam-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 16px
+        }
+
+        .cam-act {
+            flex: 1;
+            padding: 12px;
+            background: var(--red);
+            color: var(--white);
+            border-radius: var(--r-md);
+            font-family: var(--fd);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background var(--ease)
+        }
+
+        .cam-act:hover {
+            background: #c9313d
+        }
+
+        .cam-sq {
+            width: 44px;
+            height: 44px;
+            background: var(--g100);
+            border-radius: var(--r-sm);
+            font-size: 19px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background var(--ease)
+        }
+
+        .cam-sq:hover {
+            background: var(--g200)
+        }
+
+        /* ── SECTION 2: RESULTS ── */
+        #sec-results {
+            padding: 16px;
+            display: none;
+            flex-direction: column;
+            gap: 11px;
+            padding-bottom: 60px
+        }
+
+        #sec-results.on {
+            display: flex
+        }
+
         .verdict-banner {
             border-radius: var(--r-lg);
-            padding: 26px 20px;
+            padding: 22px 20px;
             text-align: center;
-            margin-bottom: 14px;
             position: relative;
-            overflow: hidden;
+            overflow: hidden
         }
 
-        .verdict-bg {
+        .vb-bg {
             position: absolute;
-            inset: 0;
-            z-index: 0;
+            inset: 0
         }
 
-        .verdict-inner {
+        .vb-inner {
             position: relative;
-            z-index: 1;
+            z-index: 1
         }
 
         .v-emoji {
-            font-size: 52px;
+            font-size: 44px;
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 7px
         }
 
         .v-text {
             font-family: var(--fd);
-            font-size: clamp(24px, 7vw, 32px);
+            font-size: clamp(21px, 6vw, 29px);
             font-weight: 800;
             letter-spacing: -.02em;
-            color: white;
+            color: var(--white)
         }
 
         .v-score {
-            font-size: 13px;
-            color: rgba(255, 255, 255, .75);
-            margin-top: 4px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, .65);
+            margin-top: 4px
         }
 
         .v-vibe {
             display: inline-block;
-            margin-top: 10px;
-            padding: 4px 14px;
-            background: rgba(255, 255, 255, .2);
+            margin-top: 8px;
+            padding: 4px 12px;
+            background: rgba(255, 255, 255, .18);
             border-radius: 999px;
-            font-size: 13px;
-            color: white;
-            font-weight: 500;
+            font-size: 12px;
+            color: var(--white);
+            font-weight: 500
         }
 
-        /* Score ring + info */
-        .ring-card {
-            background: white;
+        .card {
+            background: var(--white);
             border-radius: var(--r-lg);
-            padding: 20px;
-            margin-bottom: 14px;
-            box-shadow: var(--sh-sm);
+            padding: 17px;
+            box-shadow: var(--sh);
+            border: 1.5px solid var(--g200)
+        }
+
+        .ring-row {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 16px
         }
 
         .ring-wrap {
             position: relative;
-            width: 100px;
-            height: 100px;
-            flex-shrink: 0;
+            width: 88px;
+            height: 88px;
+            flex-shrink: 0
         }
 
         .ring-svg {
-            transform: rotate(-90deg);
+            transform: rotate(-90deg)
         }
 
         .ring-bg {
             fill: none;
             stroke: var(--g200);
-            stroke-width: 9;
+            stroke-width: 9
         }
 
         .ring-arc {
             fill: none;
             stroke-width: 9;
             stroke-linecap: round;
-            transition: stroke-dashoffset 1.6s cubic-bezier(.4, 0, .2, 1);
+            transition: stroke-dashoffset 1.6s cubic-bezier(.4, 0, .2, 1)
         }
 
-        .ring-label {
+        .ring-lbl {
             position: absolute;
             inset: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: center
         }
 
-        .ring-num {
+        .ring-n {
             font-family: var(--fd);
-            font-size: 26px;
+            font-size: 23px;
             font-weight: 800;
             color: var(--deep);
             line-height: 1;
-            letter-spacing: -.03em;
+            letter-spacing: -.03em
         }
 
-        .ring-tag {
-            font-size: 9px;
+        .ring-t {
+            font-size: 8px;
             color: var(--g600);
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: .06em;
+            letter-spacing: .06em
         }
 
         .ring-info {
-            flex: 1;
+            flex: 1
         }
 
-        .ring-info-title {
+        .ri-h {
             font-family: var(--fd);
-            font-size: 16px;
+            font-size: 14.5px;
             font-weight: 700;
             color: var(--deep);
-            margin-bottom: 5px;
+            margin-bottom: 4px
         }
 
-        .ring-info-body {
-            font-size: 13px;
-            color: var(--g600);
-            line-height: 1.5;
-        }
-
-        .platform-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 10px;
-            background: var(--deep);
-            color: white;
-            border-radius: 999px;
+        .ri-s {
             font-size: 12px;
-            font-weight: 600;
-            margin-top: 8px;
+            color: var(--g600);
+            line-height: 1.5
         }
 
-        .best-time-tag {
+        .tag {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            padding: 4px 10px;
+            gap: 3px;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 6px
+        }
+
+        .tag-d {
+            background: var(--deep);
+            color: var(--white)
+        }
+
+        .tag-f {
             background: var(--frost);
             color: var(--deep);
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 6px;
-            margin-left: 4px;
+            margin-left: 4px
         }
 
-        /* Score bars */
-        .bars-card {
-            background: white;
-            border-radius: var(--r-lg);
-            padding: 20px;
-            margin-bottom: 14px;
-            box-shadow: var(--sh-sm);
-        }
-
-        .bars-title {
+        .bars-h {
             font-family: var(--fd);
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
-            margin-bottom: 18px;
-            color: var(--deep);
+            margin-bottom: 13px;
+            color: var(--deep)
         }
 
         .sbar {
-            margin-bottom: 15px;
+            margin-bottom: 11px
         }
 
         .sbar:last-child {
-            margin-bottom: 0;
+            margin-bottom: 0
         }
 
         .sbar-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 6px;
+            margin-bottom: 5px
         }
 
-        .sbar-name {
-            font-size: 13px;
+        .sbar-n {
+            font-size: 11.5px;
             font-weight: 600;
-            color: var(--deep);
+            color: var(--deep)
         }
 
-        .sbar-val {
+        .sbar-v {
             font-family: var(--fd);
-            font-size: 14px;
-            font-weight: 800;
+            font-size: 12.5px;
+            font-weight: 800
         }
 
         .sbar-track {
-            height: 7px;
+            height: 6px;
             background: var(--g200);
             border-radius: 999px;
-            overflow: hidden;
+            overflow: hidden
         }
 
         .sbar-fill {
             height: 100%;
             border-radius: 999px;
             width: 0;
-            transition: width 1.3s cubic-bezier(.4, 0, .2, 1);
+            transition: width 1.2s cubic-bezier(.4, 0, .2, 1)
         }
 
         .c-low {
-            color: var(--red);
+            color: var(--red)
         }
 
         .c-mid {
-            color: var(--amber);
+            color: var(--amber)
         }
 
-        .c-high {
-            color: var(--steel);
+        .c-hi {
+            color: var(--steel)
         }
 
         .c-epic {
-            color: var(--green);
+            color: var(--green)
         }
 
         .f-low {
-            background: var(--red);
+            background: var(--red)
         }
 
         .f-mid {
-            background: var(--amber);
+            background: var(--amber)
         }
 
-        .f-high {
-            background: var(--steel);
+        .f-hi {
+            background: var(--steel)
         }
 
         .f-epic {
-            background: var(--green);
+            background: var(--green)
         }
 
-        /* Captions card */
-        .cap-card {
-            background: white;
-            border-radius: var(--r-lg);
-            padding: 20px;
-            margin-bottom: 14px;
-            box-shadow: var(--sh-sm);
-        }
-
-        .cap-title {
+        .cap-h {
             font-family: var(--fd);
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
-            margin-bottom: 14px;
-            color: var(--deep);
+            margin-bottom: 11px;
+            color: var(--deep)
         }
 
         .cap-item {
             display: flex;
             align-items: flex-start;
-            gap: 10px;
-            padding: 12px 13px;
+            gap: 8px;
+            padding: 9px 11px;
             background: var(--g100);
             border-radius: var(--r-sm);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             cursor: pointer;
             transition: all var(--ease);
-            border: 2px solid transparent;
+            border: 1.5px solid transparent
         }
 
         .cap-item:last-child {
-            margin-bottom: 0;
+            margin-bottom: 0
         }
 
         .cap-item:hover {
             border-color: var(--frost);
-            background: white;
+            background: var(--white)
         }
 
         .cap-item.copied {
             border-color: var(--green);
-            background: #d8f3dc;
+            background: #d8f3dc
         }
 
         .cap-num {
-            min-width: 22px;
-            height: 22px;
+            min-width: 19px;
+            height: 19px;
             border-radius: 50%;
             background: var(--deep);
-            color: white;
-            font-size: 11px;
+            color: var(--white);
+            font-size: 10px;
             font-weight: 700;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            margin-top: 1px
         }
 
-        .cap-text {
-            font-size: 13.5px;
+        .cap-txt {
+            font-size: 12.5px;
             color: var(--deep);
-            line-height: 1.55;
-            flex: 1;
+            line-height: 1.5
         }
 
-        .cap-copy-hint {
-            font-size: 11px;
+        .cap-hint {
+            font-size: 10px;
             color: var(--g400);
-            margin-top: 3px;
+            margin-top: 2px
         }
 
-        /* Glow-ups */
         .glow-card {
-            background: linear-gradient(145deg, var(--deep) 0%, var(--steel) 100%);
+            background: linear-gradient(140deg, var(--deep), var(--steel));
             border-radius: var(--r-lg);
-            padding: 20px;
-            margin-bottom: 14px;
-            color: white;
+            padding: 17px;
+            color: var(--white)
         }
 
-        .glow-title {
+        .glow-h {
             font-family: var(--fd);
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
-            margin-bottom: 14px;
+            margin-bottom: 11px
         }
 
         .glow-item {
             display: flex;
-            gap: 10px;
-            margin-bottom: 12px;
-            font-size: 14px;
-            line-height: 1.55;
+            gap: 9px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            line-height: 1.55
         }
 
         .glow-item:last-child {
-            margin-bottom: 0;
+            margin-bottom: 0
         }
 
         .glow-ic {
-            font-size: 20px;
+            font-size: 17px;
             flex-shrink: 0;
-            margin-top: 1px;
+            margin-top: 1px
         }
 
-        /* Retry btn */
-        .retry-btn {
+        .retry {
             display: block;
             width: 100%;
-            padding: 14px;
-            background: var(--g100);
-            color: var(--deep);
-            border-radius: var(--r-md);
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 14px;
-            text-align: center;
-            transition: all var(--ease);
-        }
-
-        .retry-btn:hover {
-            background: var(--g200);
-        }
-
-        /* ── LIVE PANEL ─────────────────────────────────────────── */
-        .live-panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 14px;
-            gap: 14px;
-        }
-
-        .cam-wrap {
-            position: relative;
-            border-radius: var(--r-lg);
-            overflow: hidden;
-            background: var(--deep);
-            flex: 1;
-            min-height: 240px;
-            max-height: 55vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #camVideo {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        #camCanvas {
-            display: none;
-        }
-
-        .cam-overlay {
-            position: absolute;
-            bottom: 12px;
-            left: 12px;
-            right: 12px;
-            background: rgba(29, 53, 87, .88);
-            backdrop-filter: blur(10px);
-            border-radius: var(--r-md);
-            padding: 14px;
-            display: none;
-        }
-
-        .cam-overlay.on {
-            display: block;
-        }
-
-        .cam-ov-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .cam-ov-score {
-            font-family: var(--fd);
-            font-size: 28px;
-            font-weight: 800;
-            color: white;
-            letter-spacing: -.02em;
-        }
-
-        .cam-ov-verdict {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--frost);
-        }
-
-        .cam-ov-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4px 16px;
-        }
-
-        .cam-ov-item {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            color: rgba(255, 255, 255, .75);
-        }
-
-        .cam-ov-val {
-            font-weight: 700;
-            color: var(--frost);
-        }
-
-        .cam-no-access {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            gap: 12px;
-            padding: 32px 20px;
-        }
-
-        .cam-na-icon {
-            font-size: 60px;
-        }
-
-        .cam-na-title {
-            font-family: var(--fd);
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .cam-na-sub {
-            font-size: 14px;
-            color: var(--g600);
-            line-height: 1.5;
-        }
-
-        .cam-grant {
-            padding: 12px 24px;
-            background: var(--steel);
-            color: white;
-            border-radius: var(--r-md);
-            font-weight: 600;
-            font-size: 15px;
-        }
-
-        .cam-controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        .cam-scan-btn {
-            flex: 1;
-            padding: 14px;
-            background: var(--red);
-            color: white;
-            border-radius: var(--r-md);
-            font-family: var(--fd);
-            font-size: 17px;
-            font-weight: 700;
-            box-shadow: 0 4px 18px rgba(230, 57, 70, .3);
-            transition: all var(--ease);
-        }
-
-        .cam-scan-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .cam-scan-btn:disabled {
-            background: var(--g400);
-            box-shadow: none;
-            transform: none;
-            cursor: not-allowed;
-        }
-
-        .cam-flip {
-            width: 52px;
-            height: 52px;
-            background: var(--g100);
-            border-radius: var(--r-sm);
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all var(--ease);
-        }
-
-        .cam-flip:hover {
-            background: var(--g200);
-        }
-
-        /* ── BATTLE PANEL ──────────────────────────────────────── */
-        .battle-panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 14px;
-            gap: 14px;
-            overflow-y: auto;
-        }
-
-        .battle-head {
-            text-align: center;
-        }
-
-        .battle-head-title {
-            font-family: var(--fd);
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: -.02em;
-        }
-
-        .battle-head-sub {
-            font-size: 13px;
-            color: var(--g600);
-            margin-top: 4px;
-        }
-
-        .battle-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .bslot {
-            aspect-ratio: 1;
-            border: 2.5px dashed var(--frost);
-            border-radius: var(--r-md);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            background: var(--dew);
-            transition: all var(--ease);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .bslot:hover {
-            border-color: var(--steel);
-        }
-
-        .bslot.has-img {
-            border: none;
-        }
-
-        .bslot.winner {
-            outline: 3px solid var(--green);
-            outline-offset: 2px;
-        }
-
-        .bslot.loser {
-            opacity: .55;
-            filter: grayscale(.3);
-        }
-
-        .bslot input {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            cursor: pointer;
-            width: 100%;
-            height: 100%;
-        }
-
-        .bslot-ph {
-            font-size: 28px;
-            margin-bottom: 6px;
-        }
-
-        .bslot-lbl {
-            font-size: 12px;
-            color: var(--steel);
-            font-weight: 500;
-        }
-
-        .bslot-img {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .bslot-score {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 6px;
-            background: linear-gradient(transparent, rgba(29, 53, 87, .9));
-            text-align: center;
-        }
-
-        .bslot-num {
-            font-family: var(--fd);
-            font-size: 22px;
-            font-weight: 800;
-            color: white;
-            line-height: 1;
-        }
-
-        .bslot-v {
-            font-size: 10px;
-            color: rgba(255, 255, 255, .75);
-        }
-
-        .winner-badge {
-            position: absolute;
-            top: 7px;
-            right: 7px;
-            background: var(--green);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 999px;
-            font-size: 10px;
-            font-weight: 700;
-        }
-
-        .battle-go-btn {
-            padding: 14px;
-            background: var(--deep);
-            color: white;
-            border-radius: var(--r-md);
-            font-family: var(--fd);
-            font-size: 17px;
-            font-weight: 700;
-            text-align: center;
-            transition: all var(--ease);
-            box-shadow: 0 4px 18px rgba(29, 53, 87, .25);
-        }
-
-        .battle-go-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .battle-go-btn:disabled {
-            background: var(--g400);
-            box-shadow: none;
-            transform: none;
-            cursor: not-allowed;
-        }
-
-        .battle-result {
-            background: white;
-            border-radius: var(--r-lg);
-            padding: 20px;
-            box-shadow: var(--sh-sm);
-            display: none;
-        }
-
-        .battle-result.on {
-            display: block;
-        }
-
-        .br-title {
-            font-family: var(--fd);
-            font-size: 17px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 14px;
-        }
-
-        .br-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .br-col {
-            background: var(--g100);
-            border-radius: var(--r-sm);
             padding: 12px;
-            font-size: 12px;
-            color: var(--g600);
-            line-height: 1.6;
-        }
-
-        .br-col.best {
-            background: #d8f3dc;
-        }
-
-        .br-col-name {
-            font-family: var(--fd);
-            font-size: 13px;
-            font-weight: 700;
+            background: var(--g100);
             color: var(--deep);
-            margin-bottom: 6px;
-        }
-
-        .br-col-score {
-            font-family: var(--fd);
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--deep);
-            line-height: 1;
-        }
-
-        .br-col-verdict {
-            font-size: 11px;
+            border-radius: var(--r-md);
+            font-size: 14px;
             font-weight: 600;
-            margin-top: 2px;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--ease)
         }
 
-        .br-vs {
-            font-family: var(--fd);
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--g400);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .retry:hover {
+            background: var(--g200)
         }
 
-        /* ── TOAST ─────────────────────────────────────────────── */
         #toast {
             position: fixed;
-            bottom: 24px;
+            bottom: 20px;
             left: 50%;
-            transform: translateX(-50%) translateY(80px);
+            transform: translateX(-50%) translateY(70px);
             background: var(--deep);
-            color: white;
-            padding: 12px 20px;
+            color: var(--white);
+            padding: 10px 18px;
             border-radius: 999px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            z-index: 99999;
-            transition: transform .4s cubic-bezier(.4, 0, .2, 1);
+            z-index: 9999;
+            transition: transform .35s cubic-bezier(.4, 0, .2, 1);
             max-width: calc(100vw - 40px);
             text-align: center;
-            box-shadow: var(--sh-md);
+            box-shadow: var(--sh)
         }
 
         #toast.show {
-            transform: translateX(-50%) translateY(0);
+            transform: translateX(-50%) translateY(0)
         }
 
-        /* ── PWA BANNER ────────────────────────────────────────── */
-        #pwa-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            padding: 14px 18px;
-            box-shadow: 0 -4px 24px rgba(0, 0, 0, .1);
-            border-radius: var(--r-lg) var(--r-lg) 0 0;
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            gap: 12px;
-        }
-
-        #pwa-bar.show {
-            display: flex;
-        }
-
-        .pwa-ic {
-            font-size: 36px;
-        }
-
-        .pwa-txt {
-            flex: 1;
-        }
-
-        .pwa-t {
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .pwa-s {
-            font-size: 12px;
-            color: var(--g600);
-        }
-
-        .pwa-install {
-            padding: 8px 16px;
-            background: var(--red);
-            color: white;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .pwa-x {
-            font-size: 20px;
-            color: var(--g400);
-            padding: 4px;
-        }
-
-        /* ── Confetti ──────────────────────────────────────────── */
         .conf {
             position: fixed;
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             border-radius: 2px;
             pointer-events: none;
-            z-index: 99998;
+            z-index: 9998
         }
 
-        @keyframes conf-fall {
+        @keyframes cfell {
             0% {
-                transform: translateY(-20px) rotate(0);
+                transform: translateY(-10px) rotate(0);
                 opacity: 1
             }
 
@@ -1530,582 +1165,456 @@
                 opacity: 0
             }
         }
-
-        /* ── Utilities ─────────────────────────────────────────── */
-        .gone {
-            display: none !important;
-        }
-
-        .scroll-y {
-            overflow-y: auto;
-        }
-
-        @media (min-width: 500px) {
-            .battle-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        @media (min-width: 720px) {
-
-            #app,
-            #splash {
-                max-width: 480px;
-                margin: 0 auto;
-            }
-
-            #splash {
-                position: fixed;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 100%;
-                max-width: 480px;
-                border-left: 1px solid var(--g200);
-                border-right: 1px solid var(--g200);
-            }
-
-            .carousel-inner {
-                max-width: 360px;
-            }
-
-            .fact-card {
-                min-width: 360px;
-                max-width: 360px;
-            }
-        }
     </style>
 </head>
 
 <body>
 
-    <!-- ═══════════════════════ SPLASH SCREEN ════════════════════════ -->
+    <!-- ════════════ SPLASH ════════════ -->
     <div id="splash">
-        <div class="splash-top">
-            <div class="splash-logo">post ready<span class="dot">?</span> ✨</div>
-            <p class="splash-sub">your AI bestie that knows if your pic actually <span class="spicy">slaps</span></p>
+        <div class="sp-inner">
+            <div class="sp-hero">
+                <div class="sp-wordmark">post ready<span class="dot">?</span> ✨</div>
+                <p class="sp-tag">the on-device AI that tells you if your pic <b>actually slaps</b></p>
+                <div class="sp-pills">
+                    <div class="sp-pill">🔒 100% private</div>
+                    <div class="sp-pill">⚡ runs on your GPU</div>
+                    <div class="sp-pill">📸 no uploads ever</div>
+                </div>
+            </div>
+
+            <div class="sp-warn">
+                <strong>⚠️ First launch only:</strong> downloading ~500MB–1GB AI model. WiFi recommended. After that —
+                instant! Your pics <strong>never leave your device.</strong>
+            </div>
+
+            <div class="load-box">
+                <div class="load-row">
+                    <div class="load-icon" id="phIcon">⏳</div>
+                    <div>
+                        <div class="load-title" id="phTitle">Getting ready…</div>
+                        <div class="load-sub" id="phSub">Starting AI runtime</div>
+                    </div>
+                </div>
+                <div class="pbar-track">
+                    <div class="pbar-fill" id="pbar"></div>
+                </div>
+                <div class="pbar-foot">
+                    <span id="pbarPct">0%</span>
+                    <span id="pbarPhase">Initializing</span>
+                </div>
+                <div class="file-tick" id="fileTick">Connecting…</div>
+            </div>
+
+            <div class="sp-facts">
+                <div class="facts-label">💭 fun facts while u wait</div>
+                <div class="fact">
+                    <div class="fact-em">🔒</div>
+                    <div>
+                        <div class="fact-t">Fully private, no kidding</div>
+                        <div class="fact-b">The AI model runs <b>entirely in your browser</b> via WebGPU. No server, no
+                            upload, no data collection. Ever. Your pics are yours.</div>
+                    </div>
+                </div>
+                <div class="fact">
+                    <div class="fact-em">⚡</div>
+                    <div>
+                        <div class="fact-t">The 0.4 second rule</div>
+                        <div class="fact-b">You have <b>less than half a second</b> before someone scrolls past your
+                            post. Your thumbnail does all the heavy lifting — not the caption.</div>
+                    </div>
+                </div>
+                <div class="fact">
+                    <div class="fact-em">🌿</div>
+                    <div>
+                        <div class="fact-t">Vibe &gt; perfection</div>
+                        <div class="fact-b">Gen Z engages <b>2× more</b> with authentic posts than over-edited ones.
+                            Candid + slightly imperfect? That's the aesthetic.</div>
+                    </div>
+                </div>
+                <div class="fact">
+                    <div class="fact-em">💡</div>
+                    <div>
+                        <div class="fact-t">Lighting is literally everything</div>
+                        <div class="fact-b">Golden hour + soft window light <b>add depth ring lights can't
+                                replicate.</b> Best camera = good light in front of it.</div>
+                    </div>
+                </div>
+                <div class="fact">
+                    <div class="fact-em">🎨</div>
+                    <div>
+                        <div class="fact-t">Color story check</div>
+                        <div class="fact-b">Posts with a <b>cohesive color palette</b> get up to 40% more saves. Your
+                            feed is a mood board — make it intentional.</div>
+                    </div>
+                </div>
+                <div class="fact">
+                    <div class="fact-em">💬</div>
+                    <div>
+                        <div class="fact-t">Caption hack</div>
+                        <div class="fact-b">Captions ending in a <b>question</b> get ~3× more comments. Give people a
+                            reason to type, not just double-tap.</div>
+                    </div>
+                </div>
+                <div class="fact">
+                    <div class="fact-em">🕐</div>
+                    <div>
+                        <div class="fact-t">Timing is lowkey science</div>
+                        <div class="fact-b">Posts at <b>Tue–Thu 6–9pm</b> consistently outperform. Algorithm loves fresh
+                            content when your audience is already scrolling.</div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <!-- Storage warning -->
-        <div class="storage-warn">
-            <strong>⚠️ First launch only:</strong> downloading ~500MB–1GB AI model. After that — instant! WiFi
-            recommended. Your pics <strong>never leave your device</strong> 🔒
-        </div>
-
-        <!-- Loading card -->
-        <div class="load-card">
-            <div class="load-phase-row">
-                <div class="load-phase-icon" id="phaseIcon">⏳</div>
-                <div>
-                    <div class="load-phase-title" id="phaseTitle">Getting things ready…</div>
-                    <div class="load-phase-sub" id="phaseSub">Loading AI processor</div>
-                </div>
-            </div>
-            <div class="pbar-wrap">
-                <div class="pbar-fill" id="pbar"></div>
-            </div>
-            <div class="pbar-stats">
-                <span id="pbarPct">0%</span>
-                <span id="pbarPhase">Initializing</span>
-            </div>
-            <div class="file-ticker" id="fileTicker">Connecting to model host…</div>
-        </div>
-
-        <!-- Carousel -->
-        <div class="carousel-wrap">
-            <div class="carousel-label">💭 fun facts while u wait</div>
-            <div class="carousel-inner">
-            <div class="carousel-track" id="carTrack">
-                <div class="fact-card">
-                    <div class="fact-icon">⚡</div>
-                    <div class="fact-title">The 0.4 second rule</div>
-                    <div class="fact-body">You have <span class="hi">less than half a second</span> before someone
-                        scrolls past your post. Your thumbnail is doing the heavy lifting — not your caption.</div>
-                </div>
-                <div class="fact-card">
-                    <div class="fact-icon">🌿</div>
-                    <div class="fact-title">Vibe &gt; perfection</div>
-                    <div class="fact-body">Gen Z engages <span class="hi">2× more</span> with authentic posts than
-                        over-edited ones. Candid, slightly imperfect? That's the aesthetic now.</div>
-                </div>
-                <div class="fact-card">
-                    <div class="fact-icon">💡</div>
-                    <div class="fact-title">Lighting is literally everything</div>
-                    <div class="fact-body">Golden hour and soft window light <span class="hi">add depth ring lights
-                            can't replicate</span>. The best camera is the one with good light in front of it.</div>
-                </div>
-                <div class="fact-card">
-                    <div class="fact-icon">🎨</div>
-                    <div class="fact-title">Color story check</div>
-                    <div class="fact-body">Posts with a <span class="hi">cohesive color palette</span> get up to 40%
-                        more saves on average. Your feed is a mood board — make it intentional.</div>
-                </div>
-                <div class="fact-card">
-                    <div class="fact-icon">📐</div>
-                    <div class="fact-title">The .5 effect is still slapping</div>
-                    <div class="fact-body">Wide-angle shots with a <span class="hi">slight tilt or unexpected
-                            crop</span> signal personality. The "0.5x selfie" trend is still going strong in 2026.</div>
-                </div>
-                <div class="fact-card">
-                    <div class="fact-icon">🕐</div>
-                    <div class="fact-title">Timing is lowkey science</div>
-                    <div class="fact-body">Posts at <span class="hi">Tue–Thu 6–9pm</span> consistently outperform. Your
-                        algorithm loves fresh content when your audience is already scrolling.</div>
-                </div>
-                <div class="fact-card">
-                    <div class="fact-icon">💬</div>
-                    <div class="fact-title">Caption hack</div>
-                    <div class="fact-body">Captions ending in a <span class="hi">question</span> get ~3× more comments.
-                        Give people a reason to type, not just double-tap and move on.</div>
-                </div>
-            </div>
-            <div class="carousel-dots" id="carDots"></div>
-            </div>
-
-        <div class="pwa-nudge">📲 <strong>Pro tip:</strong> Add to Home Screen for instant loads after today!</div>
     </div>
 
-    <!-- ═══════════════════════ MAIN APP ════════════════════════════ -->
+    <!-- ════════════ APP ════════════ -->
     <div id="app">
-        <!-- App bar -->
-        <div class="app-bar">
-            <div class="app-logo">post ready<span class="dot">?</span></div>
-            <div class="status-pill loading" id="statusPill">
-                <div class="sdot pulse" id="statusDot"></div>
-                <span id="statusText">Loading AI…</span>
-            </div>
-        </div>
+        <div id="app-shell">
 
-        <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab on" data-tab="check">📸 Check</button>
-            <button class="tab" data-tab="live">🎥 Live</button>
-            <button class="tab" data-tab="battle">⚔️ Battle</button>
-        </div>
-
-        <!-- ── CHECK PANEL ─── -->
-        <div class="panel on" id="panel-check">
-            <!-- Drop zone -->
-            <label class="drop-zone" id="dropZone">
-                <div class="dz-icon">🖼️</div>
-                <div class="dz-title">Drop your pic here</div>
-                <div class="dz-sub">or <span class="alt">tap to browse</span> · jpg, png, webp, heic</div>
-                <input type="file" id="fileInput" accept="image/*">
-            </label>
-
-            <!-- Preview -->
-            <div class="img-preview" id="imgPreview">
-                <img id="previewImg" alt="your photo">
-                <div class="img-preview-bar">
-                    <span class="img-preview-name" id="previewName">photo.jpg</span>
-                    <button class="img-change-btn" id="changePhotoBtn">✏️ change</button>
+            <!-- App bar -->
+            <div class="app-bar">
+                <div class="logo">post ready<span class="dot">?</span></div>
+                <div class="status-badge ld" id="statusBadge">
+                    <div class="sdot pulse" id="sdot"></div>
+                    <span id="statusTxt">Loading AI…</span>
                 </div>
             </div>
 
-            <!-- Check button -->
-            <button class="check-btn" id="checkBtn" disabled>✨ check post-worthiness</button>
+            <!-- Section 1: Upload / Capture -->
+            <div id="sec-upload">
+                <label class="drop-zone" id="dropZone">
+                    <div class="dz-icon">🖼️</div>
+                    <div class="dz-h">Drop your pic here</div>
+                    <div class="dz-s">or <u>tap to browse</u> · jpg, png, webp, heic</div>
+                    <input type="file" id="fileInput" accept="image/*">
+                </label>
 
-            <!-- Analyzing state -->
-            <div class="analyzing-box" id="analyzingBox">
-                <div class="an-title">🧠 AI is judging your pic…</div>
-                <div class="an-sub">first response takes ~40–90s · model running on your GPU</div>
-                <div class="think-dots">
-                    <div class="tdot"></div>
-                    <div class="tdot"></div>
-                    <div class="tdot"></div>
+                <div class="cam-row" id="camRow">
+                    <button class="cam-btn" id="cameraBtn">📷 Take a photo</button>
+                    <button class="cam-btn primary" id="galleryBtn">🖼️ Pick from gallery</button>
                 </div>
-                <div class="token-stream" id="tokenStream"></div>
+
+                <div class="preview" id="preview">
+                    <img id="previewImg" alt="your photo">
+                    <div class="preview-bar">
+                        <span class="preview-name" id="previewName">photo.jpg</span>
+                        <button class="change-btn" id="changeBtn">✏️ change</button>
+                    </div>
+                </div>
+
+                <button class="analyze-btn" id="analyzeBtn" disabled>✨ check post-worthiness</button>
+
+                <div class="an-box" id="anBox">
+                    <div class="an-h">🧠 AI is judging your pic…</div>
+                    <div class="an-s">~30–60s after warmup · fully running on your GPU, no internet needed</div>
+                    <div class="dots">
+                        <div class="d"></div>
+                        <div class="d"></div>
+                        <div class="d"></div>
+                    </div>
+                    <div class="tok" id="tokStream"></div>
+                </div>
             </div>
 
-            <!-- Results -->
-            <div class="results scroll-y" id="results"></div>
-        </div>
+            <!-- Section 2: Results (injected by JS) -->
+            <div id="sec-results"></div>
 
-        <!-- ── LIVE PANEL ─── -->
-        <div class="panel" id="panel-live">
-            <div class="live-panel">
-                <div class="cam-wrap" id="camWrap">
-                    <div class="cam-no-access" id="camNoAccess">
-                        <div class="cam-na-icon">📷</div>
-                        <div class="cam-na-title">Allow camera access</div>
-                        <div class="cam-na-sub">PostCheck uses your camera to analyze vibes in real time. Nothing is
-                            recorded or sent anywhere.</div>
-                        <button class="cam-grant" id="camGrantBtn">Enable Camera</button>
-                    </div>
-                    <video id="camVideo" autoplay muted playsinline style="display:none"></video>
-                    <canvas id="camCanvas"></canvas>
-                    <div class="cam-overlay" id="camOverlay">
-                        <div class="cam-ov-top">
-                            <div>
-                                <div class="cam-ov-score" id="camScore">—</div>
-                                <div class="cam-ov-verdict" id="camVerdict">tap Vibe Scan to analyze</div>
-                            </div>
-                        </div>
-                        <div class="cam-ov-grid" id="camMiniScores"></div>
-                    </div>
-                </div>
-                <div class="cam-controls">
-                    <button class="cam-flip" id="camFlip" title="Flip camera">🔄</button>
-                    <button class="cam-scan-btn" id="camScanBtn" disabled>🔍 Vibe Scan</button>
-                </div>
-                <div class="analyzing-box" id="camAnalyzingBox">
-                    <div class="an-title">🧠 Reading the vibe…</div>
-                    <div class="an-sub">analyzing captured frame</div>
-                    <div class="think-dots">
-                        <div class="tdot"></div>
-                        <div class="tdot"></div>
-                        <div class="tdot"></div>
-                    </div>
-                    <div class="token-stream" id="camTokenStream"></div>
-                </div>
+        </div>
+    </div>
+
+    <!-- Camera modal -->
+    <div id="cam-modal">
+        <div class="cam-inner">
+            <div class="cam-vid-wrap">
+                <video id="camVid" autoplay muted playsinline></video>
+                <canvas id="camCanvas"></canvas>
             </div>
-        </div>
-
-        <!-- ── BATTLE PANEL ─── -->
-        <div class="panel" id="panel-battle">
-            <div class="battle-panel">
-                <div class="battle-head">
-                    <div class="battle-head-title">⚔️ Battle Mode</div>
-                    <div class="battle-head-sub">Drop 2–4 pics · AI picks the winner</div>
-                </div>
-                <div class="battle-grid" id="battleGrid">
-                    <!-- slots injected by JS -->
-                </div>
-                <button class="battle-go-btn" id="battleGoBtn" disabled>🏆 Find the Best One</button>
-                <div class="analyzing-box" id="battleAnalyzingBox">
-                    <div class="an-title">⚔️ Judging all contenders…</div>
-                    <div class="an-sub" id="battleAnalyzingSub">starting analysis</div>
-                    <div class="think-dots">
-                        <div class="tdot"></div>
-                        <div class="tdot"></div>
-                        <div class="tdot"></div>
-                    </div>
-                    <div class="token-stream" id="battleTokenStream"></div>
-                </div>
-                <div class="battle-result" id="battleResult"></div>
+            <div class="cam-bar">
+                <button class="cam-sq" id="camFlipBtn" title="Flip camera">🔄</button>
+                <button class="cam-act" id="camSnapBtn">📸 Snap it</button>
+                <button class="cam-sq" id="camCloseBtn">✕</button>
             </div>
         </div>
     </div>
 
-    <!-- Toast -->
     <div id="toast"></div>
-    <!-- PWA Bar -->
-    <div id="pwa-bar">
-        <div class="pwa-ic">📲</div>
-        <div class="pwa-txt">
-            <div class="pwa-t">Add to Home Screen</div>
-            <div class="pwa-s">Faster loads, works offline after first use</div>
-        </div>
-        <button class="pwa-install" id="pwaInstallBtn">Install</button>
-        <button class="pwa-x" id="pwaDismissBtn">✕</button>
-    </div>
 
     <script type="module">
-        /* ══════════════════════════════════════════════════════════
-           CONSTANTS & STATE
-        ══════════════════════════════════════════════════════════ */
-        const MODEL_ID = 'onnx-community/Qwen3.5-0.8B-ONNX';
+        /* ═══════════════ LOGGER ═══════════════ */
+        const LOG_STYLE = {
+            phase: 'color:#457b9d;font-weight:700;font-size:12px',
+            info: 'color:#1d3557;font-size:11px',
+            ok: 'color:#52b788;font-weight:700;font-size:12px',
+            warn: 'color:#f4a261;font-weight:700;font-size:12px',
+            err: 'color:#e63946;font-weight:700;font-size:12px',
+            llm: 'color:#a8dadc;background:#1d3557;padding:2px 6px;border-radius:3px;font-size:11px',
+            data: 'color:#1b4332;background:#d8f3dc;padding:2px 6px;border-radius:3px;font-size:11px',
+        };
+        const log = {
+            phase: (msg, ...a) => console.log(`%c[PHASE] ${msg}`, LOG_STYLE.phase, ...a),
+            info: (msg, ...a) => console.log(`%c[INFO]  ${msg}`, LOG_STYLE.info, ...a),
+            ok: (msg, ...a) => console.log(`%c[OK]    ${msg}`, LOG_STYLE.ok, ...a),
+            warn: (msg, ...a) => console.warn(`%c[WARN]  ${msg}`, LOG_STYLE.warn, ...a),
+            err: (msg, ...a) => console.error(`%c[ERR]   ${msg}`, LOG_STYLE.err, ...a),
+            llm: (msg, ...a) => console.log(`%c[LLM]   ${msg}`, LOG_STYLE.llm, ...a),
+            data: (msg, ...a) => console.log(`%c[DATA]  ${msg}`, LOG_STYLE.data, ...a),
+            group: (label, fn) => { console.groupCollapsed(label); fn(); console.groupEnd(); },
+        };
+
+        /* ═══════════════ STATE ═══════════════ */
+        const MODEL = 'onnx-community/Qwen3.5-0.8B-ONNX';
         const CDN = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@next';
 
         const S = {
-            model: null, processor: null, TextStreamer: null, RawImage: null,
-            isLoaded: false, isAnalyzing: false,
-            uploadedImg: null,   // { dataUrl, raw }
-            camStream: null, camFacing: 'environment',
-            battleImgs: [],      // array of { dataUrl, raw, label }
-            battleScores: [],
-            deferredPwa: null,
+            model: null, proc: null, Streamer: null, RawImg: null,
+            ready: false, busy: false,
+            img: null, // { dataUrl }
+            cam: null, camFace: 'environment',
         };
 
-        /* ══════════════════════════════════════════════════════════
-           DOM REFS
-        ══════════════════════════════════════════════════════════ */
+        /* ═══════════════ DOM ═══════════════ */
         const $ = id => document.getElementById(id);
-        const splash = $('splash');
-        const app = $('app');
-        const pbar = $('pbar');
-        const pbarPct = $('pbarPct');
-        const pbarPhase = $('pbarPhase');
-        const phaseIcon = $('phaseIcon');
-        const phaseTitle = $('phaseTitle');
-        const phaseSub = $('phaseSub');
-        const fileTicker = $('fileTicker');
-        const statusPill = $('statusPill');
-        const statusDot = $('statusDot');
-        const statusText = $('statusText');
-        const dropZone = $('dropZone');
-        const fileInput = $('fileInput');
-        const imgPreview = $('imgPreview');
-        const previewImg = $('previewImg');
-        const previewName = $('previewName');
-        const changeBtn = $('changePhotoBtn');
-        const checkBtn = $('checkBtn');
-        const analyzingBox = $('analyzingBox');
-        const tokenStream = $('tokenStream');
-        const resultsEl = $('results');
-        const camNoAccess = $('camNoAccess');
-        const camVideo = $('camVideo');
-        const camCanvas = $('camCanvas');
-        const camOverlay = $('camOverlay');
-        const camScore = $('camScore');
-        const camVerdict = $('camVerdict');
-        const camMini = $('camMiniScores');
-        const camGrantBtn = $('camGrantBtn');
-        const camFlipBtn = $('camFlip');
-        const camScanBtn = $('camScanBtn');
-        const camAnBox = $('camAnalyzingBox');
-        const camTokenStr = $('camTokenStream');
-        const battleGrid = $('battleGrid');
-        const battleGoBtn = $('battleGoBtn');
-        const battleAnBox = $('battleAnalyzingBox');
-        const battleAnSub = $('battleAnalyzingSub');
-        const battleTok = $('battleTokenStream');
-        const battleResult = $('battleResult');
-        const pwaBar = $('pwa-bar');
+        const splash = $('splash'), app = $('app');
+        const phIcon = $('phIcon'), phTitle = $('phTitle'), phSub = $('phSub');
+        const pbar = $('pbar'), pbarPct = $('pbarPct'), pbarPhase = $('pbarPhase'), fileTick = $('fileTick');
+        const statusBadge = $('statusBadge'), sdot = $('sdot'), statusTxt = $('statusTxt');
+        const dropZone = $('dropZone'), fileInput = $('fileInput'), camRow = $('camRow');
+        const cameraBtn = $('cameraBtn'), galleryBtn = $('galleryBtn'), changeBtn = $('changeBtn');
+        const preview = $('preview'), previewImg = $('previewImg'), previewName = $('previewName');
+        const analyzeBtn = $('analyzeBtn'), anBox = $('anBox'), tokStream = $('tokStream');
+        const secResults = $('sec-results');
+        const camModal = $('cam-modal'), camVid = $('camVid'), camCanvas = $('camCanvas');
+        const camSnapBtn = $('camSnapBtn'), camCloseBtn = $('camCloseBtn'), camFlipBtn = $('camFlipBtn');
         const toastEl = $('toast');
 
-        /* ══════════════════════════════════════════════════════════
-           CAROUSEL
-        ══════════════════════════════════════════════════════════ */
-        const carTrack = $('carTrack');
-        const carDots = $('carDots');
-        const CARD_COUNT = carTrack.children.length;
-        let carIdx = 0;
-        let carTimer;
-
-        function initCarousel() {
-            carDots.innerHTML = '';
-            for (let i = 0; i < CARD_COUNT; i++) {
-                const d = document.createElement('div');
-                d.className = 'cdot' + (i === 0 ? ' active' : '');
-                d.onclick = () => goCard(i);
-                carDots.appendChild(d);
-            }
-            startCarousel();
-        }
-        function goCard(i) {
-            carIdx = i;
-            const inner = document.querySelector('.carousel-inner');
-            const w = inner ? inner.offsetWidth : (carTrack.children[0].offsetWidth + 14);
-            carTrack.style.transform = `translateX(-${i * w}px)`;
-            [...carDots.children].forEach((d, j) => d.className = 'cdot' + (j === i ? ' active' : ''));
-        }
-        function startCarousel() {
-            clearInterval(carTimer);
-            carTimer = setInterval(() => goCard((carIdx + 1) % CARD_COUNT), 6000);
-        }
-        initCarousel();
-
-        /* ══════════════════════════════════════════════════════════
-           MODEL LOADING
-        ══════════════════════════════════════════════════════════ */
-        let loadPct = 2;
-        const fileStatus = {}; // filename -> 'active'|'done'
+        /* ═══════════════ LOADING ═══════════════ */
+        const fileState = {};
 
         function setPhase(icon, title, sub, pct, phase) {
-            phaseIcon.textContent = icon;
-            phaseTitle.textContent = title;
-            phaseSub.textContent = sub;
-            if (pct !== null) { loadPct = pct; pbar.style.width = pct + '%'; pbarPct.textContent = pct + '%'; }
+            phIcon.textContent = icon; phTitle.textContent = title; phSub.textContent = sub;
+            if (pct != null) { pbar.style.width = pct + '%'; pbarPct.textContent = Math.round(pct) + '%'; }
             if (phase) pbarPhase.textContent = phase;
         }
 
-        function tickFile(name, state) {
-            fileStatus[name] = state;
-            const active = Object.entries(fileStatus).find(([, v]) => v === 'active');
-            const done = Object.entries(fileStatus).filter(([, v]) => v === 'done').length;
-            const total = Object.keys(fileStatus).length;
-            if (active) {
-                fileTicker.innerHTML = `<span class="active">⬇ ${shortName(active[0])}</span> · ${done}/${total} done`;
-            } else {
-                fileTicker.innerHTML = `<span class="done">✓ ${done}/${total} files downloaded</span>`;
-            }
+        function tickFile(name, st) {
+            fileState[name] = st;
+            const active = Object.entries(fileState).find(([, v]) => v === 'dl');
+            const done = Object.values(fileState).filter(v => v === 'ok').length;
+            const total = Object.keys(fileState).length;
+            fileTick.innerHTML = active
+                ? `<span class="dl">⬇ ${name.split('/').pop()}</span> · ${done}/${total} files`
+                : `<span class="ok">✓ ${done}/${total} files downloaded</span>`;
         }
-        function shortName(n) { return n.split('/').pop().replace('onnx/', ''); }
-
-        // Loading phases configuration
-        const LOADING_PHASES = {
-            INIT: { icon: '📥', title: 'Initializing environment', sub: 'Setting up AI runtime', pct: 2 },
-            IMPORT: { icon: '⬇️', title: 'Loading AI libraries', sub: 'Fetching Transformers.js from CDN', pct: 5 },
-            PROCESSOR: { icon: '⚙️', title: 'Loading processor', sub: 'Downloading tokenizer & vision config', pct: 10 },
-            DETECT: { icon: '🔍', title: 'Detecting hardware', sub: 'Checking WebGPU support & capabilities', pct: 15 },
-            DOWNLOAD: { icon: '📥', title: 'Downloading model files', sub: 'Fetching ~500MB-1GB of AI weights', pct: 20 },
-            COMPILE: { icon: '⚡', title: 'Compiling GPU shaders', sub: 'This is the silent phase — can take 5-20 min first time!', pct: 75 },
-            OPTIMIZE: { icon: '🔧', title: 'Optimizing model', sub: 'Building compute graphs & memory buffers', pct: 90 },
-            READY: { icon: '🎉', title: 'AI is ready!', sub: 'All systems operational', pct: 100 }
-        };
-
-        let currentPhase = 'INIT';
-        let compileStartTime = 0;
 
         async function loadModel() {
-            // Phase 1: Import libraries
-            setPhase(LOADING_PHASES.IMPORT.icon, LOADING_PHASES.IMPORT.title, LOADING_PHASES.IMPORT.sub, 
-                     LOADING_PHASES.IMPORT.pct, 'Importing');
+            const t0 = performance.now();
+            log.phase('Starting model load sequence');
 
-            const { AutoProcessor, Qwen3_5ForConditionalGeneration, RawImage, TextStreamer, env } =
-                await import(CDN);
+            setPhase('📦', 'Importing AI libraries…', 'Fetching Transformers.js from CDN', 3, 'Importing');
+            log.phase('Importing @huggingface/transformers from CDN…');
+            const { AutoProcessor, Qwen3_5ForConditionalGeneration, RawImage, TextStreamer, env } = await import(CDN);
+            S.RawImg = RawImage; S.Streamer = TextStreamer; env.useBrowserCache = true;
+            log.ok(`Library imported (${((performance.now() - t0) / 1000).toFixed(2)}s)`);
 
-            S.RawImage = RawImage;
-            S.TextStreamer = TextStreamer;
-            env.useBrowserCache = true;
+            setPhase('⚙️', 'Loading processor…', 'Tokenizer + vision config', 9, 'Processor');
+            log.phase('Loading AutoProcessor…');
+            const tp = performance.now();
+            S.proc = await AutoProcessor.from_pretrained(MODEL);
+            log.ok(`Processor ready (${((performance.now() - tp) / 1000).toFixed(2)}s)`);
 
-            // Phase 2: Load processor
-            currentPhase = 'PROCESSOR';
-            setPhase(LOADING_PHASES.PROCESSOR.icon, LOADING_PHASES.PROCESSOR.title, 
-                     LOADING_PHASES.PROCESSOR.sub, LOADING_PHASES.PROCESSOR.pct, 'Processor');
-
-            const processor = await AutoProcessor.from_pretrained(MODEL_ID, {
-                progress_callback: ({ status, file }) => {
-                    if (status === 'progress' && file) {
-                        fileTicker.innerHTML = `<span class="active">⬇ ${shortName(file)}</span>`;
-                    }
-                }
-            });
-            S.processor = processor;
-
-            // Phase 3: Hardware detection
-            currentPhase = 'DETECT';
-            setPhase(LOADING_PHASES.DETECT.icon, LOADING_PHASES.DETECT.title, 
-                     LOADING_PHASES.DETECT.sub, LOADING_PHASES.DETECT.pct, 'Detecting');
-
-            // Detect WebGPU + fp16
-            let device = 'wasm', visionDtype = 'fp32';
+            setPhase('🔍', 'Detecting hardware…', 'Checking WebGPU support & fp16 capabilities', 14, 'Hardware');
+            let device = 'wasm', vDt = 'fp32';
             if (navigator.gpu) {
                 device = 'webgpu';
                 try {
-                    const adapter = await navigator.gpu.requestAdapter();
-                    if (adapter?.features?.has('shader-f16')) visionDtype = 'fp16';
-                } catch { }
+                    const a = await navigator.gpu.requestAdapter();
+                    if (a?.features?.has('shader-f16')) vDt = 'fp16';
+                    log.info(`GPU adapter: ${a?.name || '(no description)'} | f16: ${vDt === 'fp16'}`);
+                } catch (e) { log.warn('GPU adapter query failed:', e); }
             }
-            await sleep(300); // Brief pause to show detection
+            log.ok(`Hardware: device=${device} | vision dtype=${vDt}`);
+            await sleep(150);
 
-            // Phase 4: Download model files
-            currentPhase = 'DOWNLOAD';
-            setPhase(LOADING_PHASES.DOWNLOAD.icon, LOADING_PHASES.DOWNLOAD.title, 
-                     LOADING_PHASES.DOWNLOAD.sub, LOADING_PHASES.DOWNLOAD.pct, 'Downloading');
+            setPhase('📥', 'Downloading model…', `~500MB–1GB of AI weights · cached after first run`, 19, 'Downloading');
+            log.phase(`Downloading model: ${MODEL}`);
+            const td = performance.now();
+            const seen = new Set();
+            let lastLogPct = 0;
 
-            const seenFiles = new Set();
-            let downloadComplete = false;
-            let lastProgressTime = performance.now();
-
-            function checkDownloadComplete() {
-                const done = Object.values(fileStatus).filter(v => v === 'done').length;
-                const total = Object.keys(fileStatus).length || 7;
-                if (done >= total && total > 0) {
-                    downloadComplete = true;
-                    return true;
-                }
-                return false;
-            }
-
-            const model = await Qwen3_5ForConditionalGeneration.from_pretrained(MODEL_ID, {
-                dtype: { embed_tokens: 'q4', vision_encoder: visionDtype, decoder_model_merged: 'q4' },
+            S.model = await Qwen3_5ForConditionalGeneration.from_pretrained(MODEL, {
+                dtype: { embed_tokens: 'q4', vision_encoder: vDt, decoder_model_merged: 'q4' },
                 device,
                 progress_callback: ({ status, file, loaded, total }) => {
                     if (!file) return;
-                    
-                    if (status === 'initiate' && !seenFiles.has(file)) {
-                        seenFiles.add(file);
-                        tickFile(file, 'active');
+                    if (status === 'initiate' && !seen.has(file)) {
+                        seen.add(file);
+                        tickFile(file, 'dl');
+                        log.info(`  ⬇ Initiated: ${file.split('/').pop()}`);
                     }
-                    
                     if (status === 'progress' && total) {
-                        lastProgressTime = performance.now();
-                        // Progress from 20% to 55% during download
-                        const fileProgress = loaded / total;
-                        const done = Object.values(fileStatus).filter(v => v === 'done').length;
-                        const t = Math.max(seenFiles.size, 1);
-                        const overall = LOADING_PHASES.DOWNLOAD.pct + (fileProgress * (55 - LOADING_PHASES.DOWNLOAD.pct) / t) + ((done / t) * (55 - LOADING_PHASES.DOWNLOAD.pct));
-                        pbar.style.width = Math.min(55, overall) + '%';
-                        pbarPct.textContent = Math.round(Math.min(55, overall)) + '%';
+                        const done = Object.values(fileState).filter(v => v === 'ok').length;
+                        const t = Math.max(seen.size, 1);
+                        const pct = 19 + Math.min(50, ((loaded / total) + (done / t)) * 25);
+                        pbar.style.width = pct + '%'; pbarPct.textContent = Math.round(pct) + '%';
                     }
-                    
                     if (status === 'done') {
-                        tickFile(file, 'done');
-                        const done = Object.values(fileStatus).filter(v => v === 'done').length;
-                        const t = Object.keys(fileStatus).length || seenFiles.size || 7;
-                        // Progress from 20% to 55%
-                        const pct = LOADING_PHASES.DOWNLOAD.pct + Math.round((done / t) * (55 - LOADING_PHASES.DOWNLOAD.pct));
-                        loadPct = pct; 
-                        pbar.style.width = pct + '%'; 
-                        pbarPct.textContent = pct + '%';
+                        tickFile(file, 'ok');
+                        const done = Object.values(fileState).filter(v => v === 'ok').length;
+                        const t = Object.keys(fileState).length || 6;
+                        const pct = 19 + Math.round((done / t) * 50);
+                        pbar.style.width = pct + '%'; pbarPct.textContent = pct + '%';
+                        log.ok(`  ✓ Done: ${file.split('/').pop()} (${done}/${t} files)`);
+                        if (Math.round(pct) - lastLogPct >= 10) { lastLogPct = Math.round(pct); log.info(`  Download progress: ${pct}%`); }
                     }
                 }
             });
+            log.ok(`Model downloaded (${((performance.now() - td) / 1000).toFixed(1)}s)`);
 
-            // Phase 5: Compiling (happens after download, before model is usable)
-            currentPhase = 'COMPILE';
-            compileStartTime = performance.now();
-            setPhase(LOADING_PHASES.COMPILE.icon, LOADING_PHASES.COMPILE.title, 
-                     `${LOADING_PHASES.COMPILE.sub} (${device.toUpperCase()})`, 60, 'Compiling');
+            // Shader compilation phase (visually fill 70-82%)
+            setPhase('⚡', 'Compiling GPU shaders…', `One-time compile on ${device.toUpperCase()} — this is the slow bit, don't close the tab!`, 70, 'Compiling');
+            log.phase(`Compiling WebGPU shaders on ${device.toUpperCase()}…`);
+            const tc = performance.now();
+            let sp = 70;
+            const ct = setInterval(() => { sp = Math.min(82, sp + .25); pbar.style.width = sp + '%'; pbarPct.textContent = Math.round(sp) + '%'; }, 600);
 
-            // Show compile progress simulation
-            let compileProgress = 60;
-            const compileInterval = setInterval(() => {
-                const elapsed = (performance.now() - compileStartTime) / 1000;
-                // Slowly increase from 60% to 85% during compilation
-                compileProgress = Math.min(85, 60 + (elapsed / 10)); // 10 seconds to reach 85%
-                pbar.style.width = compileProgress + '%';
-                pbarPct.textContent = Math.round(compileProgress) + '%';
-                
-                // Update subtext with elapsed time
-                const mins = Math.floor(elapsed / 60);
-                const secs = Math.floor(elapsed % 60);
-                const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
-                phaseSub.textContent = `${LOADING_PHASES.COMPILE.sub} (${device.toUpperCase()}) · ${timeStr} elapsed`;
-            }, 500);
-
-            // Wait a bit to let the model finish internal compilation
-            await sleep(2000);
-            clearInterval(compileInterval);
-
-            // Phase 6: Final optimization
-            currentPhase = 'OPTIMIZE';
-            setPhase(LOADING_PHASES.OPTIMIZE.icon, LOADING_PHASES.OPTIMIZE.title, 
-                     LOADING_PHASES.OPTIMIZE.sub, 90, 'Optimizing');
-            pbar.style.width = '90%';
-            pbarPct.textContent = '90%';
-            await sleep(800);
-
-            S.model = model;
-            S.isLoaded = true;
-
-            // Phase 7: Ready
-            currentPhase = 'READY';
-            setPhase(LOADING_PHASES.READY.icon, LOADING_PHASES.READY.title, 
-                     `Running on ${device.toUpperCase()} · ${visionDtype.toUpperCase()} precision`, 
-                     LOADING_PHASES.READY.pct, 'Ready ✓');
-            pbar.style.width = '100%';
-            pbarPct.textContent = '100%';
-            fileTicker.innerHTML = `<span class="done">✓ All phases complete · ${device.toUpperCase()} · ${visionDtype.toUpperCase()}</span>`;
-
-            // Transition to app
-            await sleep(1200);
-            clearInterval(carTimer);
-            splash.classList.add('hiding');
-            await sleep(600);
-            splash.style.display = 'none';
-            app.style.display = 'flex';
-            updateStatus(true);
-            showPwaBar();
-        }
-
-        function updateStatus(ready) {
-            if (ready) {
-                statusPill.className = 'status-pill ready';
-                statusDot.className = 'sdot';
-                statusText.textContent = 'AI Ready ✓';
-            } else {
-                statusPill.className = 'status-pill loading';
-                statusDot.className = 'sdot pulse';
-                statusText.textContent = 'Loading AI…';
+            // Warmup inference — pre-heats GPU compute graphs so first real run is fast
+            // Canvas must be ≥ 64×64 (processor requires width/height > factor:32)
+            setPhase('🔥', 'Warming up the AI…', 'Running a quick warmup so your first analysis is fast', 70, 'Warming up');
+            log.phase('Running warmup inference (64×64 canvas)…');
+            const tw = performance.now();
+            try {
+                const wc = document.createElement('canvas'); wc.width = 64; wc.height = 64;
+                const cx = wc.getContext('2d');
+                cx.fillStyle = '#a8dadc'; cx.fillRect(0, 0, 64, 64);
+                cx.fillStyle = '#457b9d'; cx.fillRect(16, 16, 32, 32);
+                const warmDataUrl = wc.toDataURL('image/jpeg', .5);
+                log.info(`  Warmup canvas: 64×64, dataUrl length=${warmDataUrl.length}`);
+                const wRaw = await S.RawImg.read(warmDataUrl);
+                const wConv = [{ role: 'user', content: [{ type: 'image' }, { type: 'text', text: 'k' }] }];
+                const wTxt = S.proc.apply_chat_template(wConv, { add_generation_prompt: true });
+                const wIn = await S.proc(wTxt, wRaw);
+                log.info(`  Warmup input_ids shape: [${wIn.input_ids?.dims?.join(',')}]`);
+                await S.model.generate({ ...wIn, max_new_tokens: 3, do_sample: false });
+                log.ok(`  Warmup complete (${((performance.now() - tw) / 1000).toFixed(2)}s) — GPU graphs pre-compiled ✓`);
+            } catch (e) {
+                log.warn(`Warmup skipped: ${e.message}`);
+                console.warn('[WARMUP ERROR]', e);
             }
+
+            clearInterval(ct);
+            const totalSecs = ((performance.now() - t0) / 1000).toFixed(1);
+            log.ok(`Shader compile + warmup done (${((performance.now() - tc) / 1000).toFixed(1)}s)`);
+
+            setPhase('✅', 'AI is ready!', `${device.toUpperCase()} · ${vDt.toUpperCase()} precision · cached for instant future loads`, 100, 'Ready ✓');
+            pbar.style.width = '100%'; pbarPct.textContent = '100%';
+            fileTick.innerHTML = `<span class="ok">✓ All done · ${device.toUpperCase()} · ${vDt.toUpperCase()}</span>`;
+            S.ready = true;
+
+            log.ok(`══ Model fully ready in ${totalSecs}s ══`);
+            log.group('Model load summary', () => {
+                log.info(`Model ID : ${MODEL}`);
+                log.info(`Device   : ${device}`);
+                log.info(`Vision   : ${vDt}`);
+                log.info(`Decoder  : q4`);
+                log.info(`Total    : ${totalSecs}s`);
+            });
+
+            await sleep(900);
+            splash.classList.add('hide');
+            await sleep(500);
+            splash.style.display = 'none';
+            app.classList.add('on');
+            setStatus(true);
         }
 
-        /* ══════════════════════════════════════════════════════════
-           ANALYSIS ENGINE
-        ══════════════════════════════════════════════════════════ */
-        const SCORE_KEYS = [
+        function setStatus(ok) {
+            statusBadge.className = 'status-badge ' + (ok ? 'rdy' : 'ld');
+            sdot.className = 'sdot' + (ok ? '' : ' pulse');
+            statusTxt.textContent = ok ? 'AI Ready ✓' : 'Loading AI…';
+        }
+
+        /* ═══════════════ IMAGE UPLOAD ═══════════════ */
+        function loadFile(file) {
+            log.info(`File selected: ${file.name} | type=${file.type} | size=${(file.size / 1024).toFixed(1)}KB`);
+            fileToDataUrl(file).then(dataUrl => {
+                S.img = { dataUrl };
+                log.info(`Image loaded as dataUrl, length=${dataUrl.length}`);
+                previewImg.src = URL.createObjectURL(file);
+                previewName.textContent = file.name;
+                preview.style.display = 'block';
+                dropZone.classList.add('gone');
+                camRow.classList.add('gone');
+                analyzeBtn.disabled = !S.ready;
+                secResults.classList.remove('on');
+                secResults.innerHTML = '';
+            });
+        }
+
+        fileInput.addEventListener('change', e => { const f = e.target.files?.[0]; if (f) loadFile(f); });
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('over'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault(); dropZone.classList.remove('over');
+            const f = e.dataTransfer.files?.[0];
+            if (f && f.type.startsWith('image/')) loadFile(f);
+        });
+        galleryBtn.addEventListener('click', () => fileInput.click());
+        changeBtn.addEventListener('click', reset);
+
+        function reset() {
+            S.img = null;
+            preview.style.display = 'none';
+            dropZone.classList.remove('gone');
+            camRow.classList.remove('gone');
+            analyzeBtn.disabled = true;
+            anBox.classList.remove('on');
+            secResults.classList.remove('on');
+            secResults.innerHTML = '';
+            fileInput.value = '';
+        }
+
+        /* ═══════════════ CAMERA ═══════════════ */
+        cameraBtn.addEventListener('click', openCamera);
+        camCloseBtn.addEventListener('click', closeCamera);
+        camFlipBtn.addEventListener('click', () => { S.camFace = S.camFace === 'environment' ? 'user' : 'environment'; openCamera(); });
+
+        async function openCamera() {
+            if (S.cam) { S.cam.getTracks().forEach(t => t.stop()); S.cam = null; }
+            try {
+                S.cam = await navigator.mediaDevices.getUserMedia({ video: { facingMode: S.camFace, width: { ideal: 1280 }, height: { ideal: 960 } } });
+                camVid.srcObject = S.cam;
+                camModal.classList.add('on');
+            } catch { showToast('Camera access denied 😕'); }
+        }
+
+        function closeCamera() {
+            if (S.cam) { S.cam.getTracks().forEach(t => t.stop()); S.cam = null; }
+            camVid.srcObject = null;
+            camModal.classList.remove('on');
+        }
+
+        camSnapBtn.addEventListener('click', () => {
+            const ctx = camCanvas.getContext('2d');
+            camCanvas.width = camVid.videoWidth || 640;
+            camCanvas.height = camVid.videoHeight || 480;
+            ctx.drawImage(camVid, 0, 0);
+            const dataUrl = camCanvas.toDataURL('image/jpeg', .88);
+            log.info(`Camera snap: ${camCanvas.width}×${camCanvas.height} | dataUrl length=${dataUrl.length}`);
+            S.img = { dataUrl };
+            previewImg.src = dataUrl;
+            previewName.textContent = 'camera-snap.jpg';
+            preview.style.display = 'block';
+            dropZone.classList.add('gone');
+            camRow.classList.add('gone');
+            analyzeBtn.disabled = !S.ready;
+            secResults.classList.remove('on');
+            secResults.innerHTML = '';
+            closeCamera();
+        });
+
+        /* ═══════════════ ANALYSIS ═══════════════ */
+        const KEYS = [
             { key: 'main_character_energy', label: 'Main Character Energy', emoji: '🌟' },
             { key: 'vibe_check', label: 'Vibe Check', emoji: '✨' },
             { key: 'lighting_slay', label: 'Lighting Slay', emoji: '💡' },
@@ -2116,628 +1625,293 @@
             { key: 'scroll_stop_factor', label: 'Scroll-Stop Factor', emoji: '🛑' },
         ];
 
-        const PROMPT = `You are PostCheck AI — you rate images for social media like a Gen Z expert. Respond ONLY with valid JSON, nothing else.
+        const PROMPT = `You are PostCheck AI — a Gen Z social media expert. Analyze this image for post-worthiness. Reply ONLY with valid JSON, no extra text, no markdown fences.
 
-Analyze this image and return ONLY this JSON object (fill in real scores 0-100):
-{"scores":{"main_character_energy":75,"vibe_check":80,"lighting_slay":65,"color_story":85,"composition_drip":70,"authenticity_meter":88,"caption_worthy":75,"scroll_stop_factor":80},"overall":78,"verdict":"lowkey fire 🔥","vibe_label":"clean aesthetic","captions":["caption option 1","caption option 2 with question?","caption option 3"],"best_platform":"instagram","glow_ups":["specific improvement tip 1","specific improvement tip 2","specific improvement tip 3"],"posting_time":"Tuesday 7–9pm"}
+Return exactly:
+{"scores":{"main_character_energy":75,"vibe_check":80,"lighting_slay":65,"color_story":85,"composition_drip":70,"authenticity_meter":88,"caption_worthy":75,"scroll_stop_factor":80},"overall":78,"verdict":"lowkey fire 🔥","vibe_label":"clean aesthetic","captions":["funny caption with emoji","moody poetic caption?","hype engaging caption!"],"best_platform":"instagram","glow_ups":["actionable tip 1","actionable tip 2","actionable tip 3"],"posting_time":"Tuesday 7–9pm"}
 
-Scoring guide: main_character_energy=subject presence & command, vibe_check=mood coherence & aesthetic, lighting_slay=light quality & direction, color_story=palette harmony & pop, composition_drip=framing & balance, authenticity_meter=real vs over-staged, caption_worthy=story-telling potential, scroll_stop_factor=thumb-stopping power.
-verdict must be one of: "not it 💀"|"giving nothing 😐"|"has potential ✨"|"lowkey fire 🔥"|"main character approved ⭐"|"iconic era 🏆"
-vibe_label: 2-3 word aesthetic (dark academia, clean girl, cottagecore, y2k chaos, old money, goblincore, coastal grandma, hyperpop, etc)
-captions: 3 real suggestions (funny, moody, engaging)
-glow_ups: 3 specific actionable tips
-posting_time: best day+time`;
+Scoring (0-100):
+main_character_energy=subject presence & screen command | vibe_check=mood & aesthetic coherence | lighting_slay=light quality & flattery | color_story=palette harmony & pop | composition_drip=framing & balance | authenticity_meter=natural vs over-staged | caption_worthy=storytelling richness | scroll_stop_factor=thumb-stopping feed power
 
-        async function analyzeImage(rawImage, streamEl) {
-            const conversation = [{
-                role: 'user',
-                content: [{ type: 'image' }, { type: 'text', text: PROMPT }]
-            }];
-            const text = S.processor.apply_chat_template(conversation, { add_generation_prompt: true });
-            const inputs = await S.processor(text, rawImage);
+verdict: "not it 💀" | "giving nothing 😐" | "has potential ✨" | "lowkey fire 🔥" | "main character approved ⭐" | "iconic era 🏆"
+vibe_label: 2-3 word aesthetic (dark academia, clean girl, cottagecore, y2k chaos, old money, goblincore, coastal grandma, hyperpop, eclectic maximalism…)
+captions: 3 distinct options with emojis — funny, moody, engaging
+glow_ups: 3 specific actionable improvements (not generic, be direct)
+best_platform: instagram | tiktok | pinterest | twitter | bereal
+posting_time: specific day + time window`;
 
-            let out = '';
-            const streamer = new S.TextStreamer(S.processor.tokenizer, {
-                skip_prompt: true,
-                skip_special_tokens: true,
+        analyzeBtn.addEventListener('click', async () => {
+            if (!S.img || !S.ready || S.busy) return;
+            S.busy = true; analyzeBtn.disabled = true;
+            anBox.classList.add('on'); tokStream.textContent = '';
+            secResults.classList.remove('on'); secResults.innerHTML = '';
+            log.phase('Starting analysis…');
+            const t0 = performance.now();
+            try {
+                log.info('Reading RawImage from dataUrl…');
+                const raw = await S.RawImg.read(S.img.dataUrl);
+                log.info(`RawImage ready: ${raw.width}×${raw.height} channels=${raw.channels}`);
+                const data = await runInference(raw, tokStream);
+                const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
+                log.ok(`Analysis complete in ${elapsed}s`);
+                anBox.classList.remove('on');
+                render(data);
+                secResults.classList.add('on');
+                setTimeout(() => secResults.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+            } catch (err) {
+                anBox.classList.remove('on');
+                showToast('⚠️ Analysis failed — try again?');
+                log.err('Analysis failed:', err);
+                console.error(err);
+                analyzeBtn.disabled = false;
+            }
+            S.busy = false;
+        });
+
+        async function runInference(rawImage, streamEl) {
+            const t0 = performance.now();
+            log.llm('Building conversation template…');
+            const conv = [{ role: 'user', content: [{ type: 'image' }, { type: 'text', text: PROMPT }] }];
+            const txt = S.proc.apply_chat_template(conv, { add_generation_prompt: true });
+            log.llm(`Prompt chars: ${txt.length}`);
+
+            log.llm('Processing inputs (tokenize + vision encode)…');
+            const tp = performance.now();
+            const inputs = await S.proc(txt, rawImage);
+            log.llm(`Inputs ready (${((performance.now() - tp) / 1000).toFixed(2)}s) | input_ids: [${inputs.input_ids?.dims?.join(',')}]`);
+
+            let out = '', tokCount = 0;
+            let ttft = null; // time-to-first-token
+            const tGen = performance.now();
+
+            const streamer = new S.Streamer(S.proc.tokenizer, {
+                skip_prompt: true, skip_special_tokens: true,
                 callback_function: (tok) => {
-                    out += tok;
-                    if (streamEl) streamEl.textContent = out.slice(-120);
+                    if (ttft === null) { ttft = performance.now() - tGen; log.llm(`Time to first token: ${ttft.toFixed(0)}ms`); }
+                    out += tok; tokCount++;
+                    if (streamEl) streamEl.textContent = out.slice(-110);
                 }
             });
 
-            await S.model.generate({
-                ...inputs,
-                max_new_tokens: 500,
-                do_sample: false,
-                streamer
+            log.llm('Generating… (max_new_tokens=540)');
+            await S.model.generate({ ...inputs, max_new_tokens: 540, do_sample: false, streamer });
+
+            const genSecs = (performance.now() - tGen) / 1000;
+            const tps = (tokCount / genSecs).toFixed(1);
+            log.llm(`Generation done: ${tokCount} tokens in ${genSecs.toFixed(1)}s = ${tps} tok/s`);
+
+            // Log the raw LLM output
+            log.group('📝 Raw LLM output', () => {
+                console.log(out);
             });
 
-            return parseAnalysis(out);
+            const result = parse(out);
+
+            // Log parsed + validated result
+            log.group('✅ Parsed & validated result', () => {
+                log.data(`overall: ${result.overall} | verdict: ${result.verdict} | vibe: ${result.vibe_label}`);
+                log.data(`platform: ${result.best_platform} | posting: ${result.posting_time}`);
+                console.log('scores:', result.scores);
+                console.log('captions:', result.captions);
+                console.log('glow_ups:', result.glow_ups);
+            });
+
+            log.ok(`runInference total: ${((performance.now() - t0) / 1000).toFixed(1)}s`);
+            return result;
         }
 
-        function parseAnalysis(text) {
-            const start = text.indexOf('{');
-            const end = text.lastIndexOf('}');
-            if (start === -1 || end <= start) return makeFallback();
+        function parse(text) {
+            const s = text.indexOf('{'), e = text.lastIndexOf('}');
+            if (s === -1 || e <= s) {
+                log.warn(`JSON extraction failed — no valid braces found in output (length=${text.length})`);
+                return fallback();
+            }
+            const raw = text.slice(s, e + 1).replace(/,(\s*[}\]])/g, '$1');
+            log.llm(`Extracted JSON slice: ${raw.length} chars (start=${s}, end=${e})`);
             try {
-                const cleaned = text.slice(start, end + 1).replace(/,(\s*[}\]])/g, '$1');
-                const data = JSON.parse(cleaned);
-                return validateAnalysis(data);
-            } catch {
-                return makeFallback();
+                const parsed = JSON.parse(raw);
+                log.ok('JSON.parse succeeded');
+                return validate(parsed);
+            } catch (err) {
+                log.warn(`JSON.parse failed: ${err.message}`);
+                log.group('Failed JSON snippet', () => console.log(raw.slice(0, 400)));
+                return fallback();
             }
         }
 
-        function validateAnalysis(d) {
-            const s = d.scores || {};
-            const scores = {};
-            for (const { key } of SCORE_KEYS) {
-                const v = parseInt(s[key]);
-                scores[key] = isNaN(v) ? 65 : Math.min(100, Math.max(0, v));
-            }
-            const overall = parseInt(d.overall) || Math.round(Object.values(scores).reduce((a, b) => a + b, 0) / SCORE_KEYS.length);
-            return {
-                scores,
-                overall: Math.min(100, Math.max(0, overall)),
-                verdict: d.verdict || verdictFromScore(overall),
+        function validate(d) {
+            const sc = d.scores || {}, scores = {};
+            for (const { key } of KEYS) { const v = parseInt(sc[key]); scores[key] = isNaN(v) ? 65 : clamp(v, 0, 100); }
+            const overall = parseInt(d.overall) || Math.round(Object.values(scores).reduce((a, b) => a + b) / KEYS.length);
+            const validated = {
+                scores, overall: clamp(overall, 0, 100),
+                verdict: d.verdict || verdictOf(overall),
                 vibe_label: d.vibe_label || 'undefined aesthetic',
                 captions: (Array.isArray(d.captions) ? d.captions : []).slice(0, 3),
                 best_platform: d.best_platform || 'instagram',
                 glow_ups: (Array.isArray(d.glow_ups) ? d.glow_ups : []).slice(0, 3),
                 posting_time: d.posting_time || 'Tue–Thu 7–9pm',
             };
+            // Warn if any score fields were missing (defaulted to 65)
+            const missing = KEYS.filter(({ key }) => sc[key] == null).map(k => k.key);
+            if (missing.length) log.warn(`Missing score keys (defaulted to 65): ${missing.join(', ')}`);
+            return validated;
         }
 
-        function makeFallback() {
-            const scores = {};
-            for (const { key } of SCORE_KEYS) scores[key] = 50;
-            return validateAnalysis({ scores, overall: 50, verdict: 'has potential ✨' });
+        function fallback() {
+            log.warn('Using fallback data (all scores=50)');
+            const scores = {}; KEYS.forEach(({ key }) => scores[key] = 50);
+            return validate({ scores, overall: 50, verdict: 'has potential ✨' });
         }
 
-        function verdictFromScore(n) {
-            if (n >= 86) return 'iconic era 🏆';
-            if (n >= 71) return 'main character approved ⭐';
-            if (n >= 56) return 'lowkey fire 🔥';
-            if (n >= 41) return 'has potential ✨';
-            if (n >= 26) return 'giving nothing 😐';
-            return 'not it 💀';
+        function verdictOf(n) {
+            return n >= 86 ? 'iconic era 🏆' : n >= 71 ? 'main character approved ⭐' : n >= 56 ? 'lowkey fire 🔥' : n >= 41 ? 'has potential ✨' : n >= 26 ? 'giving nothing 😐' : 'not it 💀';
         }
 
-        function scoreClass(n) {
-            if (n >= 80) return { c: 'c-epic', f: 'f-epic' };
-            if (n >= 60) return { c: 'c-high', f: 'f-high' };
-            if (n >= 40) return { c: 'c-mid', f: 'f-mid' };
-            return { c: 'c-low', f: 'f-low' };
+        function cls(n) {
+            return n >= 80 ? { c: 'c-epic', f: 'f-epic' } : n >= 60 ? { c: 'c-hi', f: 'f-hi' } : n >= 40 ? { c: 'c-mid', f: 'f-mid' } : { c: 'c-low', f: 'f-low' };
         }
 
-        function verdictColors(verdict) {
-            if (verdict.includes('🏆')) return ['#1b4332', '#40916c'];
-            if (verdict.includes('⭐')) return ['#023e8a', '#48cae4'];
-            if (verdict.includes('🔥')) return ['#7b2d00', '#e63946'];
-            if (verdict.includes('✨')) return ['#457b9d', '#a8dadc'];
-            if (verdict.includes('😐')) return ['#555', '#888'];
-            return ['#333', '#555'];
+        function vGrad(v) {
+            return v.includes('🏆') ? ['#1b4332', '#40916c'] : v.includes('⭐') ? ['#023e8a', '#48cae4'] : v.includes('🔥') ? ['#7b2d00', '#e63946'] : v.includes('✨') ? ['#457b9d', '#a8dadc'] : v.includes('😐') ? ['#555', '#888'] : ['#333', '#555'];
         }
+        function sColor(n) { return n >= 80 ? '#52b788' : n >= 60 ? '#457b9d' : n >= 40 ? '#f4a261' : '#e63946'; }
 
-        /* ══════════════════════════════════════════════════════════
-           RENDER RESULTS
-        ══════════════════════════════════════════════════════════ */
-        function renderResults(data) {
-            const [c1, c2] = verdictColors(data.verdict);
-            const { c: rc, f: rf } = scoreClass(data.overall);
-            const pct = (data.overall / 100) * 283; // circumference ≈ 283 (r=45)
+        /* ═══════════════ RENDER ═══════════════ */
+        function render(d) {
+            log.phase(`Rendering results: score=${d.overall} | verdict="${d.verdict}" | platform=${d.best_platform}`);
+            const [c1, c2] = vGrad(d.verdict);
+            const { c: rc } = cls(d.overall);
+            const pe = { instagram: '📸', tiktok: '🎵', pinterest: '📌', twitter: '🐦', bereal: '🟡' }[d.best_platform] || '📱';
+            // circumference for r=38: 2π×38≈239
+            const caps = d.captions.map((c, i) => `
+    <div class="cap-item" onclick="copyCap(this,'${c.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, ' ')}')">
+      <div class="cap-num">${i + 1}</div>
+      <div><div class="cap-txt">${esc(c)}</div><div class="cap-hint">tap to copy</div></div>
+    </div>`).join('');
 
-            const platformEmoji = { instagram: '📸', tiktok: '🎵', pinterest: '📌', twitter: '🐦', bereal: '🟡' };
-            const pe = platformEmoji[data.best_platform] || '📱';
+            const glows = d.glow_ups.map((g, i) => `<div class="glow-item"><div class="glow-ic">${['🔆', '📏', '🎭'][i] || '💡'}</div><div>${esc(g)}</div></div>`).join('');
 
-            let capHTML = '';
-            data.captions.forEach((c, i) => {
-                capHTML += `<div class="cap-item" onclick="copyCaption(this,'${c.replace(/'/g, "\\'")}')">
-        <div class="cap-num">${i + 1}</div>
-        <div><div class="cap-text">${escHtml(c)}</div><div class="cap-copy-hint">tap to copy</div></div>
-      </div>`;
-            });
+            const bars = KEYS.map(({ key, label, emoji }) => {
+                const n = d.scores[key]; const { c, f } = cls(n);
+                return `<div class="sbar">
+      <div class="sbar-row"><div class="sbar-n">${emoji} ${label}</div><div class="sbar-v ${c}" data-sc="${n}">0</div></div>
+      <div class="sbar-track"><div class="sbar-fill ${f}" data-t="${n}"></div></div>
+    </div>`;
+            }).join('');
 
-            let glowHTML = '';
-            const glowIcons = ['🔆', '📏', '🎭'];
-            data.glow_ups.forEach((g, i) => {
-                glowHTML += `<div class="glow-item"><div class="glow-ic">${glowIcons[i] || '💡'}</div><div>${escHtml(g)}</div></div>`;
-            });
-
-            resultsEl.innerHTML = `
-      <div class="verdict-banner fade-in">
-        <div class="verdict-bg" style="background:linear-gradient(145deg,${c1},${c2})"></div>
-        <div class="verdict-inner">
-          <span class="v-emoji">${data.verdict.match(/\p{Emoji}/u)?.[0] || '✨'}</span>
-          <div class="v-text">${data.verdict.replace(/\p{Emoji}/gu, '').trim()}</div>
-          <div class="v-score">Post Score: ${data.overall}/100</div>
-          <div class="v-vibe">${data.vibe_label}</div>
-        </div>
+            secResults.innerHTML = `
+    <div class="verdict-banner">
+      <div class="vb-bg" style="background:linear-gradient(140deg,${c1},${c2})"></div>
+      <div class="vb-inner">
+        <span class="v-emoji">${d.verdict.match(/\p{Emoji}/u)?.[0] || '✨'}</span>
+        <div class="v-text">${d.verdict.replace(/\p{Emoji}/gu, '').trim()}</div>
+        <div class="v-score">Post Score: ${d.overall}/100</div>
+        <div class="v-vibe">${d.vibe_label}</div>
       </div>
+    </div>
 
-      <div class="ring-card fade-in">
+    <div class="card">
+      <div class="ring-row">
         <div class="ring-wrap">
-          <svg class="ring-svg" width="100" height="100" viewBox="0 0 100 100">
-            <circle class="ring-bg" cx="50" cy="50" r="45"/>
-            <circle class="ring-arc" cx="50" cy="50" r="45"
-              stroke="${getScoreColor(data.overall)}"
-              stroke-dasharray="283"
-              stroke-dashoffset="${283}"
-              id="ringArc"/>
+          <svg class="ring-svg" width="88" height="88" viewBox="0 0 88 88">
+            <circle class="ring-bg" cx="44" cy="44" r="38"/>
+            <circle class="ring-arc" cx="44" cy="44" r="38"
+              stroke="${sColor(d.overall)}" stroke-dasharray="239" stroke-dashoffset="239" id="rArc"/>
           </svg>
-          <div class="ring-label">
-            <div class="ring-num ${rc}" id="ringNum">0</div>
-            <div class="ring-tag">post score</div>
+          <div class="ring-lbl">
+            <div class="ring-n ${rc}" id="rNum">0</div>
+            <div class="ring-t">score</div>
           </div>
         </div>
         <div class="ring-info">
-          <div class="ring-info-title">Best for ${data.best_platform.charAt(0).toUpperCase() + data.best_platform.slice(1)}</div>
-          <div class="ring-info-body">Post on <strong>${data.posting_time}</strong> for max reach</div>
-          <span class="platform-tag">${pe} ${data.best_platform}</span>
-          <span class="best-time-tag">🕐 ${data.posting_time}</span>
+          <div class="ri-h">Best for ${d.best_platform.charAt(0).toUpperCase() + d.best_platform.slice(1)}</div>
+          <div class="ri-s">Post on <strong>${d.posting_time}</strong></div>
+          <span class="tag tag-d">${pe} ${d.best_platform}</span>
+          <span class="tag tag-f">🕐 ${d.posting_time}</span>
         </div>
       </div>
+    </div>
 
-      <div class="bars-card fade-in">
-        <div class="bars-title">🔬 The breakdown</div>
-        ${SCORE_KEYS.map(({ key, label, emoji }) => {
-                const n = data.scores[key];
-                const { c, f } = scoreClass(n);
-                return `<div class="sbar">
-            <div class="sbar-row">
-              <div class="sbar-name">${emoji} ${label}</div>
-              <div class="sbar-val ${c}" data-score="${n}">0</div>
-            </div>
-            <div class="sbar-track"><div class="sbar-fill ${f}" data-target="${n}"></div></div>
-          </div>`;
-            }).join('')}
-      </div>
+    <div class="card">
+      <div class="bars-h">🔬 The breakdown</div>
+      ${bars}
+    </div>
 
-      ${data.captions.length ? `
-      <div class="cap-card fade-in">
-        <div class="cap-title">💬 Caption inspo (tap to copy)</div>
-        ${capHTML}
-      </div>` : ''}
+    ${d.captions.length ? `<div class="card"><div class="cap-h">💬 Caption inspo (tap to copy)</div>${caps}</div>` : ''}
 
-      <div class="glow-card fade-in">
-        <div class="glow-title">💅 Glow-up tips</div>
-        ${glowHTML}
-      </div>
+    <div class="glow-card">
+      <div class="glow-h">💅 Glow-up tips</div>
+      ${glows}
+    </div>
 
-      <button class="retry-btn" onclick="resetCheck()">📸 Try another pic</button>
-    `;
+    <button class="retry" onclick="doRetry()">📸 Try another pic</button>
+  `;
 
-            resultsEl.classList.add('on');
-
-            // Animate ring
             requestAnimationFrame(() => {
-                const arc = document.getElementById('ringArc');
-                if (arc) {
-                    setTimeout(() => {
-                        arc.style.strokeDashoffset = 283 - pct;
-                        animateNum(document.getElementById('ringNum'), 0, data.overall, 1500);
-                    }, 100);
-                }
-                // Animate bars
-                document.querySelectorAll('.sbar-fill').forEach(el => {
-                    setTimeout(() => { el.style.width = el.dataset.target + '%'; }, 200);
-                });
-                document.querySelectorAll('[data-score]').forEach(el => {
-                    setTimeout(() => animateNum(el, 0, parseInt(el.dataset.score), 1200), 200);
-                });
+                const arc = document.getElementById('rArc');
+                if (arc) setTimeout(() => {
+                    arc.style.strokeDashoffset = 239 - (d.overall / 100) * 239;
+                    animNum(document.getElementById('rNum'), 0, d.overall, 1400);
+                }, 80);
+                document.querySelectorAll('.sbar-fill').forEach(el => setTimeout(() => { el.style.width = el.dataset.t + '%'; }, 150));
+                document.querySelectorAll('[data-sc]').forEach(el => setTimeout(() => animNum(el, 0, +el.dataset.sc, 1100), 150));
             });
 
-            // Fire confetti if score >= 70
-            if (data.overall >= 70) spawnConfetti();
+            if (d.overall >= 70) confetti();
         }
 
-        function getScoreColor(n) {
-            if (n >= 80) return '#52b788';
-            if (n >= 60) return '#457b9d';
-            if (n >= 40) return '#f4a261';
-            return '#e63946';
-        }
+        window.copyCap = async (el, text) => {
+            try { await navigator.clipboard.writeText(text); el.classList.add('copied'); showToast('Caption copied! ✓'); setTimeout(() => el.classList.remove('copied'), 2000); }
+            catch { showToast('Long-press to copy'); }
+        };
+        window.doRetry = reset;
 
-        function animateNum(el, from, to, dur) {
-            const start = performance.now();
-            function tick(now) {
-                const t = Math.min(1, (now - start) / dur);
-                const ease = 1 - Math.pow(1 - t, 3);
-                el.textContent = Math.round(from + (to - from) * ease);
+        /* ═══════════════ UTILS ═══════════════ */
+        function animNum(el, from, to, dur) {
+            const st = performance.now();
+            (function tick(now) {
+                const t = Math.min(1, (now - st) / dur);
+                el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - t, 3)));
                 if (t < 1) requestAnimationFrame(tick);
-            }
-            requestAnimationFrame(tick);
+            })(performance.now());
         }
 
-        window.copyCaption = async function (el, text) {
-            try {
-                await navigator.clipboard.writeText(text);
-                el.classList.add('copied');
-                showToast('Caption copied! ✓');
-                setTimeout(() => el.classList.remove('copied'), 2000);
-            } catch {
-                showToast('Tap & hold to copy manually');
-            }
-        };
-
-        window.resetCheck = function () {
-            S.uploadedImg = null;
-            imgPreview.style.display = 'none';
-            dropZone.classList.remove('hidden');
-            checkBtn.disabled = true;
-            analyzingBox.classList.remove('on');
-            resultsEl.classList.remove('on');
-            resultsEl.innerHTML = '';
-            tokenStream.textContent = '';
-            fileInput.value = '';
-        };
-
-        /* ══════════════════════════════════════════════════════════
-           CHECK PANEL LOGIC
-        ══════════════════════════════════════════════════════════ */
-        fileInput.addEventListener('change', e => {
-            const file = e.target.files?.[0];
-            if (file) loadFile(file);
-        });
-
-        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('over'); });
-        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
-        dropZone.addEventListener('drop', e => {
-            e.preventDefault(); dropZone.classList.remove('over');
-            const file = e.dataTransfer.files?.[0];
-            if (file && file.type.startsWith('image/')) loadFile(file);
-        });
-
-        changeBtn.addEventListener('click', () => fileInput.click());
-
-        async function loadFile(file) {
-            const url = URL.createObjectURL(file);
-            const dataUrl = await fileToDataUrl(file);
-            previewImg.src = url;
-            previewName.textContent = file.name;
-            imgPreview.style.display = 'block';
-            dropZone.classList.add('hidden');
-            S.uploadedImg = { dataUrl };
-            checkBtn.disabled = !S.isLoaded;
-        }
-
-        checkBtn.addEventListener('click', async () => {
-            if (!S.uploadedImg || !S.isLoaded || S.isAnalyzing) return;
-            S.isAnalyzing = true;
-            checkBtn.disabled = true;
-            analyzingBox.classList.add('on');
-            tokenStream.textContent = '';
-            resultsEl.classList.remove('on');
-
-            try {
-                const raw = await S.RawImage.read(S.uploadedImg.dataUrl);
-                const data = await analyzeImage(raw, tokenStream);
-                analyzingBox.classList.remove('on');
-                renderResults(data);
-                resultsEl.scrollIntoView({ behavior: 'smooth' });
-            } catch (err) {
-                analyzingBox.classList.remove('on');
-                showToast('⚠️ Analysis failed. Try again?');
-                console.error(err);
-                checkBtn.disabled = false;
-            }
-            S.isAnalyzing = false;
-        });
-
-        /* ══════════════════════════════════════════════════════════
-           CAMERA / LIVE PANEL
-        ══════════════════════════════════════════════════════════ */
-        camGrantBtn.addEventListener('click', startCamera);
-        camFlipBtn.addEventListener('click', () => {
-            S.camFacing = S.camFacing === 'environment' ? 'user' : 'environment';
-            startCamera();
-        });
-
-        async function startCamera() {
-            if (S.camStream) { S.camStream.getTracks().forEach(t => t.stop()); S.camStream = null; }
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: S.camFacing, width: { ideal: 1280 }, height: { ideal: 720 } }
-                });
-                S.camStream = stream;
-                camVideo.srcObject = stream;
-                camVideo.style.display = 'block';
-                camNoAccess.style.display = 'none';
-                camScanBtn.disabled = !S.isLoaded;
-                camOverlay.classList.add('on');
-            } catch (err) {
-                showToast('Camera access denied 😕');
+        function confetti() {
+            const cols = ['#e63946', '#457b9d', '#a8dadc', '#52b788', '#f4a261', '#1d3557'];
+            for (let i = 0; i < 36; i++) {
+                const p = document.createElement('div'); p.className = 'conf';
+                p.style.cssText = `left:${Math.random() * 100}vw;top:-10px;background:${cols[i % 6]};animation:cfell ${1.4 + Math.random() * 1.4}s ease-in forwards;animation-delay:${Math.random() * .5}s;transform:rotate(${Math.random() * 360}deg);width:${5 + Math.random() * 6}px;height:${5 + Math.random() * 6}px;border-radius:${Math.random() > .5 ? '50%' : '2px'}`;
+                document.body.appendChild(p); setTimeout(() => p.remove(), 3200);
             }
         }
 
-        camScanBtn.addEventListener('click', async () => {
-            if (!S.camStream || S.isAnalyzing || !S.isLoaded) return;
-            S.isAnalyzing = true;
-            camScanBtn.disabled = true;
-
-            // Capture frame
-            const ctx = camCanvas.getContext('2d');
-            camCanvas.width = camVideo.videoWidth || 640;
-            camCanvas.height = camVideo.videoHeight || 480;
-            ctx.drawImage(camVideo, 0, 0);
-            const dataUrl = camCanvas.toDataURL('image/jpeg', 0.85);
-
-            camAnBox.classList.add('on');
-            camTokenStr.textContent = '';
-            try {
-                const raw = await S.RawImage.read(dataUrl);
-                const data = await analyzeImage(raw, camTokenStr);
-                camAnBox.classList.remove('on');
-                renderCamOverlay(data);
-            } catch (err) {
-                camAnBox.classList.remove('on');
-                showToast('Scan failed, try again');
-            }
-            S.isAnalyzing = false;
-            camScanBtn.disabled = false;
-        });
-
-        function renderCamOverlay(data) {
-            camScore.textContent = data.overall;
-            camVerdict.textContent = data.verdict;
-            const mini = ['lighting_slay', 'color_story', 'vibe_check', 'scroll_stop_factor'];
-            camMini.innerHTML = mini.map(k => {
-                const lbl = SCORE_KEYS.find(s => s.key === k);
-                return `<div class="cam-ov-item"><span>${lbl?.emoji || ''} ${lbl?.label?.split(' ')[0]}</span><span class="cam-ov-val">${data.scores[k]}</span></div>`;
-            }).join('');
-            camOverlay.classList.add('on');
-        }
-
-        // Start camera when switching to Live tab
-        document.querySelector('[data-tab="live"]').addEventListener('click', () => {
-            if (!S.camStream) setTimeout(() => { if (navigator.mediaDevices) startCamera(); }, 300);
-        });
-
-        /* ══════════════════════════════════════════════════════════
-           BATTLE PANEL
-        ══════════════════════════════════════════════════════════ */
-        const MAX_BATTLE = 4;
-        S.battleImgs = [];
-
-        function initBattleSlots() {
-            battleGrid.innerHTML = '';
-            for (let i = 0; i < MAX_BATTLE; i++) {
-                const slot = document.createElement('div');
-                slot.className = 'bslot';
-                slot.dataset.idx = i;
-                slot.innerHTML = `
-        <input type="file" accept="image/*" id="bfile${i}">
-        <div class="bslot-ph">📷</div>
-        <div class="bslot-lbl">Add photo ${i + 1}</div>
-      `;
-                slot.querySelector('input').addEventListener('change', e => {
-                    const f = e.target.files?.[0];
-                    if (f) loadBattleFile(f, i);
-                });
-                slot.addEventListener('click', () => slot.querySelector('input').click());
-                battleGrid.appendChild(slot);
-            }
-        }
-        initBattleSlots();
-
-        async function loadBattleFile(file, idx) {
-            const dataUrl = await fileToDataUrl(file);
-            S.battleImgs[idx] = { dataUrl, label: file.name };
-            const slot = battleGrid.children[idx];
-            let img = slot.querySelector('.bslot-img');
-            if (!img) {
-                img = document.createElement('img'); img.className = 'bslot-img'; slot.appendChild(img);
-            }
-            img.src = dataUrl;
-            slot.classList.add('has-img');
-            slot.querySelector('.bslot-ph').style.display = 'none';
-            slot.querySelector('.bslot-lbl').style.display = 'none';
-            const filled = S.battleImgs.filter(Boolean).length;
-            battleGoBtn.disabled = !S.isLoaded || filled < 2;
-        }
-
-        battleGoBtn.addEventListener('click', async () => {
-            const imgs = S.battleImgs.filter(Boolean);
-            if (imgs.length < 2 || !S.isLoaded || S.isAnalyzing) return;
-            S.isAnalyzing = true;
-            battleGoBtn.disabled = true;
-            battleAnBox.classList.add('on');
-            battleTok.textContent = '';
-            battleResult.classList.remove('on');
-            S.battleScores = [];
-
-            for (let i = 0; i < imgs.length; i++) {
-                battleAnSub.textContent = `Analyzing photo ${i + 1} of ${imgs.length}…`;
-                battleTok.textContent = '';
-                try {
-                    const raw = await S.RawImage.read(imgs[i].dataUrl);
-                    const data = await analyzeImage(raw, battleTok);
-                    S.battleScores[i] = data;
-                } catch {
-                    S.battleScores[i] = makeFallback();
-                }
-            }
-
-            battleAnBox.classList.remove('on');
-            renderBattleResult(imgs, S.battleScores);
-            S.isAnalyzing = false;
-            battleGoBtn.disabled = false;
-        });
-
-        function renderBattleResult(imgs, scores) {
-            const winIdx = scores.reduce((best, s, i) => s.overall > scores[best].overall ? i : best, 0);
-
-            // Update slots
-            [...battleGrid.children].forEach((slot, i) => {
-                if (!imgs[i]) return;
-                slot.classList.remove('winner', 'loser');
-                slot.classList.add(i === winIdx ? 'winner' : 'loser');
-                const scoreDiv = slot.querySelector('.bslot-score') || (() => {
-                    const d = document.createElement('div'); d.className = 'bslot-score'; slot.appendChild(d); return d;
-                })();
-                scoreDiv.innerHTML = `<div class="bslot-num">${scores[i].overall}</div><div class="bslot-v">${scores[i].verdict}</div>`;
-                if (i === winIdx) {
-                    const badge = document.createElement('div'); badge.className = 'winner-badge'; badge.textContent = '👑 Winner';
-                    slot.appendChild(badge);
-                }
-            });
-
-            // Render comparison
-            const loserIdx = scores.reduce((worst, s, i) => s.overall < scores[worst].overall ? i : worst, 0);
-            const winner = scores[winIdx], loser = scores[loserIdx];
-
-            const gridCols = imgs.map((_, i) => {
-                const s = scores[i];
-                const isWin = i === winIdx;
-                return `<div class="br-col${isWin ? ' best' : ''}">
-        <div class="br-col-name">${isWin ? '👑 ' : ''} Photo ${i + 1}</div>
-        <div class="br-col-score">${s.overall}</div>
-        <div class="br-col-verdict">${s.verdict}</div>
-        <div style="font-size:11px;margin-top:8px;color:var(--g600)">
-          ${SCORE_KEYS.slice(0, 4).map(k => `${k.emoji} ${k.label.split(' ')[0]}: <strong>${s.scores[k.key]}</strong>`).join('<br>')}
-        </div>
-      </div>`;
-            });
-
-            // Insert VS between pairs
-            const gridHTML = gridCols.length === 2
-                ? `<div class="br-col${winIdx === 0 ? ' best' : ''}">${gridCols[0].replace(/^<div[^>]*>/, '').replace(/<\/div>$/, '')}</div><div class="br-vs">VS</div><div class="br-col${winIdx === 1 ? ' best' : ''}">${gridCols[1].replace(/^<div[^>]*>/, '').replace(/<\/div>$/, '')}</div>`
-                : `<div style="display:grid;grid-template-columns:repeat(${gridCols.length},1fr);gap:8px">${gridCols.join('')}</div>`;
-
-            battleResult.innerHTML = `
-      <div class="br-title">👑 Photo ${winIdx + 1} wins the battle!</div>
-      <div class="br-grid" style="display:grid;grid-template-columns:repeat(${Math.min(4, imgs.length)},1fr);gap:8px">
-        ${imgs.map((_, i) => {
-                const s = scores[i];
-                const isWin = i === winIdx;
-                return `<div class="br-col${isWin ? ' best' : ''}">
-            <div class="br-col-name">${isWin ? '👑 ' : ''}Photo ${i + 1}</div>
-            <div class="br-col-score">${s.overall}</div>
-            <div class="br-col-verdict" style="font-size:10px">${s.verdict}</div>
-          </div>`;
-            }).join('')}
-      </div>
-      <div style="margin-top:12px;padding:12px;background:var(--dew);border-radius:var(--r-sm);font-size:13px;color:var(--deep)">
-        <strong>💡 Why Photo ${winIdx + 1} wins:</strong><br>
-        ${winner.vibe_label} vibes · ${winner.glow_ups[0] || 'strong overall composition'}
-      </div>
-    `;
-            battleResult.classList.add('on');
-            spawnConfetti();
-        }
-
-        /* ══════════════════════════════════════════════════════════
-           TABS
-        ══════════════════════════════════════════════════════════ */
-        document.querySelectorAll('.tab').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
-                document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
-                btn.classList.add('on');
-                document.getElementById('panel-' + btn.dataset.tab).classList.add('on');
-            });
-        });
-
-        /* ══════════════════════════════════════════════════════════
-           PWA
-        ══════════════════════════════════════════════════════════ */
-        window.addEventListener('beforeinstallprompt', e => {
-            e.preventDefault();
-            S.deferredPwa = e;
-        });
-
-        function showPwaBar() {
-            setTimeout(() => {
-                if (S.deferredPwa) pwaBar.classList.add('show');
-            }, 3000);
-        }
-
-        $('pwaInstallBtn').addEventListener('click', async () => {
-            if (!S.deferredPwa) return;
-            S.deferredPwa.prompt();
-            const { outcome } = await S.deferredPwa.userChoice;
-            pwaBar.classList.remove('show');
-            if (outcome === 'accepted') showToast('App installed! 🎉 Loads instantly next time');
-            S.deferredPwa = null;
-        });
-
-        $('pwaDismissBtn').addEventListener('click', () => pwaBar.classList.remove('show'));
-
-        /* ══════════════════════════════════════════════════════════
-           UTILS
-        ══════════════════════════════════════════════════════════ */
-        let toastTimer;
-        function showToast(msg, dur = 3000) {
-            toastEl.textContent = msg;
-            toastEl.classList.add('show');
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => toastEl.classList.remove('show'), dur);
-        }
-
-        function spawnConfetti() {
-            const colors = ['#e63946', '#457b9d', '#a8dadc', '#52b788', '#f4a261', '#1d3557'];
-            for (let i = 0; i < 40; i++) {
-                const p = document.createElement('div');
-                p.className = 'conf';
-                p.style.cssText = `
-        left:${Math.random() * 100}vw; top:-10px;
-        background:${colors[i % colors.length]};
-        animation:conf-fall ${1.5 + Math.random() * 1.5}s ease-in forwards;
-        animation-delay:${Math.random() * 0.6}s;
-        transform:rotate(${Math.random() * 360}deg);
-        width:${6 + Math.random() * 6}px; height:${6 + Math.random() * 6}px;
-        border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
-      `;
-                document.body.appendChild(p);
-                setTimeout(() => p.remove(), 3000);
-            }
-        }
-
-        function fileToDataUrl(file) {
-            return new Promise((res, rej) => {
-                const r = new FileReader();
-                r.onload = () => res(r.result);
-                r.onerror = rej;
-                r.readAsDataURL(file);
-            });
-        }
-
-        function escHtml(s) {
-            return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        }
-
+        let _tt;
+        function showToast(msg) { toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(_tt); _tt = setTimeout(() => toastEl.classList.remove('show'), 2800); }
+        function fileToDataUrl(f) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); }); }
+        function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
         function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+        function clamp(v, min, max) { return Math.min(max, Math.max(min, v)); }
 
-        /* ══════════════════════════════════════════════════════════
-           KICK OFF — show app shell immediately, load model in bg
-        ══════════════════════════════════════════════════════════ */
-
-        // Show app shell early (while model loads) but still show splash
-        // Model loading starts immediately
+        /* ═══════════════ BOOT ═══════════════ */
+        console.log('%c post ready? ✨ ', 'background:#1d3557;color:#a8dadc;font-size:16px;font-weight:800;padding:4px 10px;border-radius:4px');
+        console.log('%c Open this console to monitor AI loading, inference timing, and LLM output. ', 'color:#457b9d;font-size:11px');
+        log.info(`User agent: ${navigator.userAgent.slice(0, 80)}…`);
+        log.info(`WebGPU available: ${!!navigator.gpu}`);
         loadModel().catch(err => {
-            console.error('Model load failed:', err);
+            log.err(`loadModel() threw: ${err.message}`);
+            console.error('[FATAL]', err);
             setPhase('❌', 'Load failed', err.message?.slice(0, 60) || 'Unknown error', null, 'Error');
-            // Still show app after error (limited functionality)
             setTimeout(async () => {
-                splash.classList.add('hiding');
-                await sleep(600);
+                splash.classList.add('hide'); await sleep(500);
                 splash.style.display = 'none';
-                app.style.display = 'flex';
-                updateStatus(false);
+                app.classList.add('on');
+                setStatus(false);
             }, 3000);
         });
 
-        // Update check button state when model loads
-        const origCheckDisabled = setInterval(() => {
-            if (S.isLoaded) {
-                if (S.uploadedImg) checkBtn.disabled = false;
-                if (S.camStream) camScanBtn.disabled = false;
-                const filled = S.battleImgs.filter(Boolean).length;
-                battleGoBtn.disabled = filled < 2;
-                clearInterval(origCheckDisabled);
-            }
-        }, 1000);
+        // Keep analyze button in sync with load state
+        setInterval(() => { if (S.ready && S.img && analyzeBtn.disabled && !S.busy) analyzeBtn.disabled = false; }, 500);
     </script>
 </body>
 
