@@ -9,6 +9,7 @@
     <meta name="theme-color" content="#f1faee">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2337,7 +2338,7 @@ Be honest and vary your scores based on what you actually see. No preamble, no e
         function clamp(v, mn, mx) { return Math.min(mx, Math.max(mn, v)); }
 
         /* ═══════════ BOOT ═══════════ */
-        console.log('%c post ready? ✨ (v4) ', 'background:#1d3557;color:#a8dadc;font-size:16px;font-weight:800;padding:4px 10px;border-radius:4px');
+        console.log('%c post ready? ✨ ', 'background:#1d3557;color:#a8dadc;font-size:16px;font-weight:800;padding:4px 10px;border-radius:4px');
         console.log('%c fix: removed example numbers from prompt (model was copying them) + temp=0.3 sampling ', 'color:#457b9d;font-size:11px');
         L.i(`WebGPU: ${!!navigator.gpu}`);
 

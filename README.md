@@ -7,11 +7,16 @@
   Runs 100% on-device · Zero uploads · No account needed · No cap.
 </p>
 
-
+<p align="center">
+  <img src="post-ready.gif" alt="post ready demo" width="600"/>
+</p>
 
 <p align="center">
-  <a href="https://2796gaurav.github.io/post_ready/" target="_blank">
+  <a href="https://2796gaurav.github.io/post-ready/" target="_blank">
     <img src="https://img.shields.io/badge/Live%20Demo-457b9d?style=for-the-badge&logo=github&logoColor=white"/>
+  </a>
+  <a href="https://huggingface.co/spaces/2796gauravc/post-ready" target="_blank">
+    <img src="https://img.shields.io/badge/%F0%9F%A4%97%20HF%20Spaces-f4a261?style=for-the-badge&logo=huggingface&logoColor=white"/>
   </a>
   <img src="https://img.shields.io/badge/AI-On--Device-52b788?style=for-the-badge&logo=brain&logoColor=white"/>
   <img src="https://img.shields.io/badge/Privacy-100%25_Private-1d3557?style=for-the-badge&logo=lock&logoColor=white"/>
@@ -73,8 +78,8 @@ The AI rates every photo across 8 dimensions (0–100 each):
 
 ```bash
 # Clone the repo
-git clone https://github.com/2796gaurav/post_ready.git
-cd post_ready
+git clone https://github.com/2796gaurav/post-ready.git
+cd post-ready
 
 # Open in browser
 open index.html   # macOS
@@ -246,5 +251,5 @@ copies or substantial portions of the Software.
 <p align="center">
   Made with ✨ and zero backends<br/>
   <strong>post ready?</strong> — because your camera roll deserves an honest friend<br/><br/>
-  <a href="https://2796gaurav.github.io/post_ready/">🚀 Try it Live</a>
+  <a href="https://2796gaurav.github.io/post-ready/">🚀 Try it Live</a>
 </p>
